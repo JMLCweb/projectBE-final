@@ -1,63 +1,74 @@
 const { MongoClient, ObjectId } = require("mongodb");
-const argon2 = require("argon2");
 
 const mongoUrl = process.env.MONGO_URL;
-let client;
+const client = new MongoClient(mongoUrl);
 
 const connectToDB = async () => {
-  if (!client || !client.topology || client.topology.isDestroyed()) {
-    client = new MongoClient(mongoUrl);
+  try {
     await client.connect();
+    const db = client.db("projectDB");
+    return db.collection("users");
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    throw new Error("Failed to connect to the database.");
   }
-  return client.db("projectDB");
-};
-
-const getUsersCollection = async () => {
-  const db = await connectToDB();
-  return db.collection("users");
 };
 
 const getAllUsers = async () => {
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await connectToDB();
   return await usersCollection.find().toArray();
 };
 
 const getUserById = async (id) => {
-  const usersCollection = await getUsersCollection();
-  return await usersCollection.findOne({ _id: new ObjectId(id) });
+  const usersCollection = await connectToDB();
+  return await usersCollection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
 };
 
 const getUserByEmail = async (email) => {
-  const usersCollection = await getUsersCollection();
-  return await usersCollection.findOne({ email });
+  const usersCollection = await connectToDB();
+  const user = await usersCollection.findOne({ email });
+  console.log(`User retrieved for email ${email}:`, user);
+  return user;
 };
 
 const addUser = async (user) => {
-  user.cart = []; // Inicialize o carrinho do usuário
+  user.cart = [];
+  user.role = "customer";
 
-  try {
-    user.password = await argon2.hash(user.password); // Criptografa a senha com Argon2
-  } catch (error) {
-    throw new Error("Error encrypting password");
-  }
+  const usersCollection = await connectToDB();
 
-  const usersCollection = await getUsersCollection();
-  const result = await usersCollection.insertOne(user);
-  return { _id: result.insertedId, ...user }; // Retorna o usuário com o ID inserido
+  const timestamp = new Date();
+  const usersWithTimestamps = {
+    ...user,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+
+  const result = await usersCollection.insertOne(usersWithTimestamps);
+  return { _id: result.insertedId, ...user };
 };
 
 const updateUserById = async (id, user) => {
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await connectToDB();
   const result = await usersCollection.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: user }
+    { _id: ObjectId.createFromHexString(id) },
+    {
+      $set: {
+        ...user,
+        updatedAt: new Date(),
+      },
+    }
   );
   return result.matchedCount > 0;
 };
 
 const deleteUserById = async (id) => {
-  const usersCollection = await getUsersCollection();
-  const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+  const usersCollection = await connectToDB();
+  const result = await usersCollection.deleteOne({
+    _id: ObjectId.createFromHexString(id),
+  });
   return result.deletedCount > 0;
 };
 

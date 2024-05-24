@@ -1,30 +1,30 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
 const mongoUrl = process.env.MONGO_URL;
-let client;
+const client = new MongoClient(mongoUrl);
 
 const connectToDB = async () => {
-  if (!client || !client.topology || client.topology.isDestroyed()) {
-    client = new MongoClient(mongoUrl);
+  try {
     await client.connect();
+    const db = client.db("projectDB");
+    return db.collection("users");
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    throw new Error("Failed to connect to the database.");
   }
-  return client.db("projectDB");
-};
-
-const getUsersCollection = async () => {
-  const db = await connectToDB();
-  return db.collection("users");
 };
 
 const addToCart = async (userId, productId, quantity) => {
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await connectToDB();
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  const cartItem = user.cart.find((item) => item.productId.equals(productId));
+  const cartItem = user.cart.find((item) =>
+    item.productId.equals(new ObjectId(productId))
+  );
 
   if (cartItem) {
     cartItem.quantity += quantity;
@@ -41,14 +41,16 @@ const addToCart = async (userId, productId, quantity) => {
 };
 
 const removeFromCart = async (userId, productId) => {
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await connectToDB();
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  user.cart = user.cart.filter((item) => !item.productId.equals(productId));
+  user.cart = user.cart.filter(
+    (item) => !item.productId.equals(new ObjectId(productId))
+  );
 
   await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
@@ -59,8 +61,10 @@ const removeFromCart = async (userId, productId) => {
 };
 
 const getCart = async (userId) => {
-  const usersCollection = await getUsersCollection();
-  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+  const usersCollection = await connectToDB();
+  const user = await usersCollection.findOne({
+    _id: ObjectId.createFromHexString(userId),
+  });
 
   if (!user) {
     throw new Error("User not found");
@@ -70,7 +74,7 @@ const getCart = async (userId) => {
 };
 
 const clearCart = async (userId) => {
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await connectToDB();
   await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
     { $set: { cart: [] } }

@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+
 app.use(express.json());
 
 const productsRoutes = require("../src/routes/productsRouter");
@@ -16,6 +17,7 @@ app.use("/cart", cart);
 
 const usersRoutes = require("../src/routes/usersRoutes");
 app.use("/users", usersRoutes);
+
 app.listen(port, function () {
   console.log(`Listening on ${port}`);
 });

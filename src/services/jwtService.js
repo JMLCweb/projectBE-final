@@ -24,9 +24,10 @@ function verifyToken(token) {
   return payload;
 }
 function getTokenExpirationDate() {
-  return Math.floor(Date.now() / 1000) + 24 * 60 * 60; // Retorna o timestamp de expiração em segundos
+  const now = new Date();
+  now.setDate(now.getDate() + 1); // Set expiration to 1 day from now
+  return now;
 }
-
 module.exports = {
   createToken,
   verifyToken,

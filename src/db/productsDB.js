@@ -1,14 +1,17 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
 const mongoUrl = process.env.MONGO_URL;
-let client;
+const client = new MongoClient(mongoUrl);
 
 const connectToDB = async () => {
-  if (!client || !client.topology || client.topology.isDestroyed()) {
-    client = new MongoClient(mongoUrl);
+  try {
     await client.connect();
+    const db = client.db("projectDB");
+    return db.collection("products");
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    throw new Error("Failed to connect to the database.");
   }
-  return client.db("projectDB").collection("products");
 };
 
 const getProducts = async () => {
@@ -24,7 +27,9 @@ const getProducts = async () => {
 const getProductById = async (id) => {
   try {
     const productsCollection = await connectToDB();
-    return await productsCollection.findOne({ _id: new ObjectId(id) });
+    return await productsCollection.findOne({
+      _id: ObjectId.createFromHexString(id),
+    });
   } catch (error) {
     console.error(`Error fetching product with ID ${id}:`, error);
     throw new Error("Failed to get product by ID.");
@@ -34,8 +39,16 @@ const getProductById = async (id) => {
 const addProduct = async (product) => {
   try {
     const productsCollection = await connectToDB();
-    const result = await productsCollection.insertOne(product);
-    return result.ops[0];
+
+    const timestamp = new Date();
+    const productWithTimestamps = {
+      ...product,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+
+    const result = await productsCollection.insertOne(productWithTimestamps);
+    return { id: result.insertedId, ...product };
   } catch (error) {
     console.error("Error adding product:", error);
     throw new Error("Failed to add product.");
@@ -46,7 +59,7 @@ const updateProductById = async (id, product) => {
   try {
     const productsCollection = await connectToDB();
     const result = await productsCollection.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: ObjectId.createFromHexString(id) },
       { $set: product }
     );
     return result.matchedCount > 0;
@@ -60,7 +73,7 @@ const deleteProductById = async (id) => {
   try {
     const productsCollection = await connectToDB();
     const result = await productsCollection.deleteOne({
-      _id: new ObjectId(id),
+      _id: ObjectId.createFromHexString(id),
     });
     return result.deletedCount > 0;
   } catch (error) {

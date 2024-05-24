@@ -11,10 +11,10 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", auth, fetchAllUsers);
-router.get("/:id", auth, fetchUserById);
-router.put("/update/:id", auth, modifyUserById);
-router.delete("/delete/:id", auth, removeUserById);
+router.get("/", fetchAllUsers);
+router.get("/:id", fetchUserById);
+router.put("/update/:id", modifyUserById);
+router.delete("/delete/:id", removeUserById);
 
 router.post("/login", loginUser);
 router.post("/register", createUser);

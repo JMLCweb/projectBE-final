@@ -7,7 +7,7 @@ const {
   getUserByEmail,
 } = require("../db/usersDB");
 const argon2 = require("argon2");
-const jwtService = require("../services/jwtService"); // Importa o serviço JWT
+const jwtService = require("../services/jwtService");
 
 const fetchAllUsers = async (req, res) => {
   try {
@@ -33,34 +33,49 @@ const fetchUserById = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  try {
-    const user = await getUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const isPasswordValid = await argon2.verify(user.password, password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-    const token = jwtService.createToken(user._id, user.email);
-    res.json({ message: "Login successful", token, user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const result = await getUserByEmail(email);
+
+  if (!result) {
+    res.status(400).json({
+      status: "error",
+      message: "User not found",
+    });
+    return;
   }
+
+  const dbSavedHash = result.password;
+  const passwordMatch = await argon2.verify(dbSavedHash, password);
+  if (!passwordMatch) {
+    res.status(404).json({
+      status: "error",
+      message: "Wrong password",
+    });
+    return;
+  }
+
+  const token = jwtService.createToken(result.id, result.email);
+
+  res.json({
+    status: "ok",
+    message: "User logged in",
+    token,
+  });
 };
 
 const createUser = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const existingUser = await getUserByEmail(req.body.email);
+    const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    const hashedPassword = await argon2.hash(req.body.password);
+    const hash = await argon2.hash(password);
     const newUser = await addUser({
       ...req.body,
-      password: hashedPassword,
+      password: hash,
     });
+
     const token = jwtService.createToken(newUser._id, newUser.email);
     const tokenExpiration = jwtService.getTokenExpirationDate();
     res.status(201).json({ user: newUser, token, tokenExpiration });

@@ -50,7 +50,6 @@ const getProductById = async (req, res) => {
 
 const postProduct = async (req, res) => {
   const newProduct = req.body;
-  // You can add validation for newProduct here
 
   try {
     const product = await productDB.addProduct(newProduct);
