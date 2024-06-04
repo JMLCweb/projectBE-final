@@ -18,19 +18,6 @@ const fetchAllUsers = async (req, res) => {
   }
 };
 
-const fetchUserById = async (req, res) => {
-  try {
-    const user = await getUserById(req.params.id);
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-    } else {
-      res.json(user);
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const result = await getUserByEmail(email);
@@ -60,6 +47,19 @@ const loginUser = async (req, res) => {
     message: "User logged in",
     token,
   });
+};
+
+const fetchUserById = async (req, res) => {
+  try {
+    const user = await getUserById(req.params.id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      res.json(user);
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const createUser = async (req, res) => {

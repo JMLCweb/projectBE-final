@@ -69,7 +69,6 @@ const postProduct = async (req, res) => {
 const putProductById = async (req, res) => {
   const { id } = req.params;
   const updatedProduct = req.body;
-  // You can add validation for updatedProduct here
 
   if (!ObjectId.isValid(id)) {
     return res.status(400).json({

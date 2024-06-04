@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = "superSecretPrivateKey";
+const jwtSecret = process.env.JWT_SECRET;
 
 function createToken(userId, email) {
   const tokenPayload = {
@@ -25,9 +25,10 @@ function verifyToken(token) {
 }
 function getTokenExpirationDate() {
   const now = new Date();
-  now.setDate(now.getDate() + 1); // Set expiration to 1 day from now
+  now.setDate(now.getDate() + 1);
   return now;
 }
+
 module.exports = {
   createToken,
   verifyToken,

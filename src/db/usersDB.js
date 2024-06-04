@@ -14,6 +14,24 @@ const connectToDB = async () => {
   }
 };
 
+const addUser = async (user) => {
+  user.cart = [];
+  user.role = "customer";
+
+  const usersCollection = await connectToDB();
+
+  const timestamp = new Date();
+
+  const usersWithTimestamps = {
+    ...user,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+
+  const result = await usersCollection.insertOne(usersWithTimestamps);
+  return { _id: result.insertedId, ...user };
+};
+
 const getAllUsers = async () => {
   const usersCollection = await connectToDB();
   return await usersCollection.find().toArray();
@@ -29,25 +47,7 @@ const getUserById = async (id) => {
 const getUserByEmail = async (email) => {
   const usersCollection = await connectToDB();
   const user = await usersCollection.findOne({ email });
-  console.log(`User retrieved for email ${email}:`, user);
   return user;
-};
-
-const addUser = async (user) => {
-  user.cart = [];
-  user.role = "customer";
-
-  const usersCollection = await connectToDB();
-
-  const timestamp = new Date();
-  const usersWithTimestamps = {
-    ...user,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-
-  const result = await usersCollection.insertOne(usersWithTimestamps);
-  return { _id: result.insertedId, ...user };
 };
 
 const updateUserById = async (id, user) => {
