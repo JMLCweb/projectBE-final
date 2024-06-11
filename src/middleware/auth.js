@@ -1,5 +1,4 @@
 const jwtService = require("../services/jwtService");
-const { getAdminById } = require("../db/adminDB");
 
 function isAuthenticated(req, res, next) {
   const token = req.headers["token"];
@@ -13,27 +12,21 @@ function isAuthenticated(req, res, next) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
+    const tokenExpiration = new Date(userData.tokenExpiration);
+    const now = new Date();
+    if (now > tokenExpiration) {
+      return res.status(401).json({ message: "Token has expired" });
+    }
+
     req.user = userData;
+    req.headers["role"] = userData.role;
+
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
   }
 }
 
-const isAdmin = async (req, res, next) => {
-  try {
-    const admin = await getAdminById(req.user.userId);
-    if (admin && admin.role === "admin") {
-      next();
-    } else {
-      res.status(403).json({ message: "Forbidden: Admins only" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 module.exports = {
   isAuthenticated,
-  isAdmin,
 };

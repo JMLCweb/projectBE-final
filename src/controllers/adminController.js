@@ -41,7 +41,7 @@ const loginAdmin = async (req, res) => {
       return;
     }
 
-    const token = jwtService.createToken(result._id, result.email);
+    const token = jwtService.createToken(result._id, result.email, result.role);
 
     res.json({
       status: "ok",

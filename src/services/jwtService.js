@@ -2,10 +2,12 @@ const jwt = require("jsonwebtoken");
 
 const jwtSecret = process.env.JWT_SECRET;
 
-function createToken(userId, email) {
+function createToken(userId, email, role) {
   const tokenPayload = {
     userId,
     email,
+    role,
+    tokenExpiration: getTokenExpirationDate(),
   };
 
   const token = jwt.sign(tokenPayload, jwtSecret, {
@@ -25,8 +27,8 @@ function verifyToken(token) {
 }
 function getTokenExpirationDate() {
   const now = new Date();
-  now.setDate(now.getDate() + 1);
-  return now;
+  now.setDate(now.getDate() + 1); // Set expiration to 1 day in the future
+  return now.toISOString(); // Return as ISO string
 }
 
 module.exports = {

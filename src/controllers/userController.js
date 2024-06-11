@@ -40,12 +40,13 @@ const loginUser = async (req, res) => {
     return;
   }
 
-  const token = jwtService.createToken(result.id, result.email);
+  const token = jwtService.createToken(result.id, result.email, result.role);
 
   res.json({
     status: "ok",
     message: "User logged in",
     token,
+    tokenExpiration: jwtService.getTokenExpirationDate(),
   });
 };
 

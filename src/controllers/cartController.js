@@ -3,6 +3,7 @@ const {
   removeFromCart,
   getCart,
   clearCart,
+  checkout,
 } = require("../db/cartDB");
 
 const addProductToCart = async (req, res) => {

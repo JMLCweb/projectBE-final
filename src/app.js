@@ -20,6 +20,9 @@ app.use("/users", usersRoutes);
 const adminRoutes = require("../src/routes/adminRoutes");
 app.use("/godmode", adminRoutes);
 
+const orderRoutes = require("./routes/ordersRoutes");
+app.use("/orders", orderRoutes);
+
 app.listen(port, function () {
   console.log(`Listening on ${port}`);
 });

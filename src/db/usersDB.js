@@ -1,4 +1,5 @@
 const { MongoClient, ObjectId } = require("mongodb");
+const argon2 = require("argon2");
 
 const mongoUrl = process.env.MONGO_URL;
 const client = new MongoClient(mongoUrl);
@@ -16,7 +17,8 @@ const connectToDB = async () => {
 
 const addUser = async (user) => {
   user.cart = [];
-  user.role = "customer";
+  user.orders = [];
+  user.role = "user";
 
   const usersCollection = await connectToDB();
 
@@ -52,6 +54,9 @@ const getUserByEmail = async (email) => {
 
 const updateUserById = async (id, user) => {
   const usersCollection = await connectToDB();
+  if (user.password) {
+    user.password = await argon2.hash(user.password);
+  }
   const result = await usersCollection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {
