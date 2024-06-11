@@ -21,8 +21,18 @@ http://localhost:3000/products
 {JSON}
 need auth and token
 
+AddCartProduct - POST
+http://localhost:3000/cart/add
+{JSON}
+	"userId":"",
+	"ProductId":"",
+	"quantity":""
+login an token
+
 ClearCart - POST
 http://localhost:3000/cart/clear/{id}
+
+
 
 —————————
 
@@ -48,6 +58,9 @@ GetCartUserId - GET
 http://localhost:3000/cart/{id}
 need auth and token
 
+GetAdminById - GET
+http://localhost:3000/godmode/{id}
+need auth and Token
 
 ——————————
 
@@ -61,6 +74,12 @@ http://localhost:3000/products/{id}
 {JSON}
 need auth and token
 
+UpdateAdmin - PUT
+http://localhost:3000/godmode/update/{id}
+{JSON}
+need auth and token
+
+
 ——————————
 
 deleteUserId - DEL
@@ -71,10 +90,10 @@ deleteProductId - DEL
 http://localhost:3000/products/{id}
 need auth and token
 
+deleteAdmin - DEL
+http://localhost:3000/godmode/delete/%7Bid%7D
+need auth and token
+
 deleteCartProduct - DEL
 http://localhost:3000/cart/remove
-{JSON}
-"userId":"",
-"productId":""
- 
-need auth and token
+login and token
