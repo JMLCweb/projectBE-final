@@ -6,9 +6,11 @@ const {
   modifyUserById,
   removeUserById,
   loginUser,
+  modifyUserWithVerification,
 } = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const checkRole = require("../middleware/role");
+const verifyId = require("../middleware/verifyId");
 
 const router = express.Router();
 
@@ -16,10 +18,15 @@ router.post("/login", loginUser);
 router.post("/register", createUser);
 
 router.use(auth.isAuthenticated);
+router.get("/:userId", verifyId.IdentifyUser, fetchUserById);
 
-router.put("/update/:id", modifyUserById);
+router.put(
+  "/update/:userId",
+  verifyId.IdentifyUser,
+  modifyUserWithVerification
+);
 
-router.get("/:id", checkRole("admin"), fetchUserById);
+router.put("/update/admin/:userId", checkRole("admin"), modifyUserById);
 router.get("/", checkRole("admin"), fetchAllUsers);
 router.delete("/delete/:id", checkRole("admin"), removeUserById);
 

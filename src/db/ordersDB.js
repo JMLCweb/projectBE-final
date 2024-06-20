@@ -1,24 +1,11 @@
-const { MongoClient, ObjectId } = require("mongodb");
-
-const mongoUrl = process.env.MONGO_URL;
-const client = new MongoClient(mongoUrl);
-
-const connectToDB = async () => {
-  try {
-    await client.connect();
-    const db = client.db("projectDB");
-    return {
-      usersCollection: db.collection("users"),
-      ordersCollection: db.collection("orders"),
-    };
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-    throw new Error("Failed to connect to the database.");
-  }
-};
+const { ObjectId } = require("mongodb");
+const connectToDB = require("./connectDB");
 
 const checkout = async (userId) => {
-  const { usersCollection, ordersCollection } = await connectToDB();
+  const db = await connectToDB();
+  const usersCollection = db.collection("users");
+  const ordersCollection = db.collection("orders");
+
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
@@ -49,19 +36,21 @@ const checkout = async (userId) => {
 };
 
 const getAllOrders = async () => {
-  const { ordersCollection } = await connectToDB();
-  const orders = await ordersCollection.find().toArray();
-  return orders;
+  const db = await connectToDB();
+  const ordersCollection = db.collection("orders");
+  return await ordersCollection.find().toArray();
 };
 
 const getOrderById = async (orderId) => {
-  const { ordersCollection } = await connectToDB();
-  const order = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
-  return order;
+  const db = await connectToDB();
+  const ordersCollection = db.collection("orders");
+  return await ordersCollection.findOne({ _id: new ObjectId(orderId) });
 };
 
 const updateOrderStatus = async (orderId, status, notes) => {
-  const { ordersCollection } = await connectToDB();
+  const db = await connectToDB();
+  const ordersCollection = db.collection("orders");
+
   const updateData = {
     status,
     updatedAt: new Date(),
@@ -82,7 +71,10 @@ const updateOrderStatus = async (orderId, status, notes) => {
 };
 
 const moveOrderToHistory = async (userId, orderId) => {
-  const { usersCollection, ordersCollection } = await connectToDB();
+  const db = await connectToDB();
+  const usersCollection = db.collection("users");
+  const ordersCollection = db.collection("orders");
+
   const order = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
   if (!order) return false;
 

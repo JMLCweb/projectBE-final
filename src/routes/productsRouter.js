@@ -7,8 +7,9 @@ router.get("/", productsController.getProducts);
 router.get("/:id", productsController.getProductById);
 
 router.use(auth.isAuthenticated);
+router.post("/reviews/:productId", productsController.addProductReview);
 
-router.post("/", checkRole("admin"), productsController.postProduct);
+router.post("/", checkRole("admin"), productsController.newProduct);
 router.put("/:id", checkRole("admin"), productsController.putProductById);
 router.delete("/:id", checkRole("admin"), productsController.deleteProductById);
 

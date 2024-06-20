@@ -31,15 +31,23 @@ const fetchOrderById = async (req, res) => {
 const newOrderStatus = async (req, res) => {
   const { status, notes } = req.body;
   try {
+    const order = await getOrderById(req.params.orderId);
+    if (!order) {
+      res.status(404).json({ message: "Order not found" });
+      return;
+    }
+
     const updated = await updateOrderStatus(req.params.orderId, status, notes);
     if (!updated) {
-      res.status(404).json({ message: "Order not found" });
-    } else {
-      if (status === "completed") {
-        await moveOrderToHistory(req.params.userId, req.params.orderId);
-      }
-      res.json({ message: "Order status updated successfully" });
+      res.status(500).json({ message: "Failed to update order status" });
+      return;
     }
+
+    if (status === "completed") {
+      await moveOrderToHistory(order.userId, req.params.orderId);
+    }
+
+    res.json({ message: "Order status Completed and moved for history" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,8 +55,7 @@ const newOrderStatus = async (req, res) => {
 
 const checkoutCart = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const newOrder = await checkout(userId);
+    const newOrder = await checkout(req.params.userId);
     res.json(newOrder);
   } catch (error) {
     res.status(500).json({ message: error.message });

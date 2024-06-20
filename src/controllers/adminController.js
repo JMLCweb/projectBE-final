@@ -9,12 +9,20 @@ const {
 const argon2 = require("argon2");
 const jwtService = require("../services/jwtService");
 
-const fetchAllAdmins = async (req, res) => {
+const createAdmin = async (req, res) => {
+  const { email } = req.body;
   try {
-    const admins = await getAllAdmins();
-    res.json(admins);
+    const existingAdmin = await getAdminByEmail(email);
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const newAdmin = await addAdmin(req.body);
+
+    const token = jwtService.createToken(newAdmin._id, newAdmin.email);
+    res.status(201).json({ admin: newAdmin, token });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error on Register Admin" });
   }
 };
 
@@ -49,6 +57,15 @@ const loginAdmin = async (req, res) => {
       token,
     });
   } catch (error) {
+    res.status(500).json({ message: "Login Failed" });
+  }
+};
+
+const fetchAllAdmins = async (req, res) => {
+  try {
+    const admins = await getAllAdmins();
+    res.json(admins);
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -66,32 +83,10 @@ const fetchAdminById = async (req, res) => {
   }
 };
 
-const createAdmin = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const existingAdmin = await getAdminByEmail(email);
-    if (existingAdmin) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    const hash = await argon2.hash(password);
-    const newAdmin = await addAdmin({
-      ...req.body,
-      password: hash,
-    });
-
-    const token = jwtService.createToken(newAdmin._id, newAdmin.email);
-    const tokenExpiration = jwtService.getTokenExpirationDate();
-    res.status(201).json({ admin: newAdmin, token, tokenExpiration });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 const modifyAdminById = async (req, res) => {
   try {
-    const updated = await updateAdminById(req.params.id, req.body);
-    if (!updated) {
+    const admin = await updateAdminById(req.params.id, req.body);
+    if (!admin) {
       res.status(404).json({ message: "Admin not found" });
     } else {
       res.json({ message: "Admin updated successfully" });
@@ -103,8 +98,8 @@ const modifyAdminById = async (req, res) => {
 
 const removeAdminById = async (req, res) => {
   try {
-    const deleted = await deleteAdminById(req.params.id);
-    if (!deleted) {
+    const admin = await deleteAdminById(req.params.id);
+    if (!admin) {
       res.status(404).json({ message: "Admin not found" });
     } else {
       res.json({ message: "Admin deleted successfully" });
@@ -115,10 +110,10 @@ const removeAdminById = async (req, res) => {
 };
 
 module.exports = {
-  fetchAllAdmins,
-  loginAdmin,
-  fetchAdminById,
   createAdmin,
+  loginAdmin,
+  fetchAllAdmins,
+  fetchAdminById,
   modifyAdminById,
   removeAdminById,
 };

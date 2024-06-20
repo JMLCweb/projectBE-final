@@ -1,9 +1,27 @@
 const productDB = require("../db/productsDB");
 const { ObjectId } = require("mongodb");
 
+const newProduct = async (req, res) => {
+  const productData = req.body;
+
+  try {
+    const product = await productDB.addProduct(productData);
+    res.status(201).json({
+      status: "OK",
+      data: product,
+    });
+  } catch (error) {
+    console.error("Error in postProduct:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Error adding product",
+    });
+  }
+};
+
 const getProducts = async (req, res) => {
   try {
-    const products = await productDB.getProducts();
+    const products = await productDB.getAllProducts();
     res.status(200).json({
       status: "OK",
       data: products,
@@ -19,15 +37,8 @@ const getProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   const { id } = req.params;
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid product ID",
-    });
-  }
-
   try {
-    const product = await productDB.getProductById(id);
+    const product = await productDB.getProduct(id);
     if (!product) {
       return res.status(404).json({
         status: "error",
@@ -47,36 +58,31 @@ const getProductById = async (req, res) => {
     });
   }
 };
-
-const postProduct = async (req, res) => {
-  const newProduct = req.body;
-
+const addProductReview = async (req, res) => {
   try {
-    const product = await productDB.addProduct(newProduct);
-    res.status(201).json({
-      status: "OK",
-      data: product,
-    });
+    const userId = req.user._id;
+    const { rating, comment } = req.body;
+
+    const review = await addReview(
+      req.params.productId,
+      userId,
+      rating,
+      comment
+    );
+
+    res.json({ message: "Review added successfully", review });
   } catch (error) {
-    console.error("Error in postProduct:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Error adding product",
-    });
+    if (error.message === "Product not found") {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
 const putProductById = async (req, res) => {
   const { id } = req.params;
   const updatedProduct = req.body;
-
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid product ID",
-    });
-  }
-
   try {
     const updated = await productDB.updateProductById(id, updatedProduct);
     if (!updated) {
@@ -132,9 +138,10 @@ const deleteProductById = async (req, res) => {
 };
 
 module.exports = {
+  newProduct,
   getProducts,
   getProductById,
-  postProduct,
+  addProductReview,
   putProductById,
   deleteProductById,
 };

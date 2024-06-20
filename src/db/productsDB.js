@@ -1,91 +1,79 @@
-const { MongoClient, ObjectId } = require("mongodb");
-
-const mongoUrl = process.env.MONGO_URL;
-const client = new MongoClient(mongoUrl);
-
-const connectToDB = async () => {
-  try {
-    await client.connect();
-    const db = client.db("projectDB");
-    return db.collection("products");
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-    throw new Error("Failed to connect to the database.");
-  }
-};
-
-const getProducts = async () => {
-  try {
-    const productsCollection = await connectToDB();
-    return await productsCollection.find().toArray();
-  } catch (error) {
-    console.error("Error fetching all products:", error);
-    throw new Error("Failed to get all products.");
-  }
-};
-
-const getProductById = async (id) => {
-  try {
-    const productsCollection = await connectToDB();
-    return await productsCollection.findOne({
-      _id: ObjectId.createFromHexString(id),
-    });
-  } catch (error) {
-    console.error(`Error fetching product with ID ${id}:`, error);
-    throw new Error("Failed to get product by ID.");
-  }
-};
+const { ObjectId } = require("mongodb");
+const connectToDB = require("./connectDB");
 
 const addProduct = async (product) => {
-  try {
-    const productsCollection = await connectToDB();
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  const timestamp = new Date();
+  const productWithDate = {
+    ...product,
+    createdAt: timestamp,
+  };
+  const result = await productsCollection.insertOne(productWithDate);
+  return { id: result.insertedId, ...productWithDate };
+};
 
-    const timestamp = new Date();
-    const productWithTimestamps = {
-      ...product,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    };
+const getAllProducts = async () => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  return await productsCollection.find().toArray();
+};
 
-    const result = await productsCollection.insertOne(productWithTimestamps);
-    return { id: result.insertedId, ...product };
-  } catch (error) {
-    console.error("Error adding product:", error);
-    throw new Error("Failed to add product.");
-  }
+const getProduct = async (id) => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  return await productsCollection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
 };
 
 const updateProductById = async (id, product) => {
-  try {
-    const productsCollection = await connectToDB();
-    const result = await productsCollection.updateOne(
-      { _id: ObjectId.createFromHexString(id) },
-      { $set: product }
-    );
-    return result.matchedCount > 0;
-  } catch (error) {
-    console.error(`Error updating product with ID ${id}:`, error);
-    throw new Error("Failed to update product by ID.");
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  const result = await productsCollection.updateOne(
+    { _id: ObjectId.createFromHexString(id) },
+    { $set: { ...product, updatedAt: new Date() } }
+  );
+  return result.matchedCount > 0;
+};
+
+const addReview = async (productId, userId, rating, comment) => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+
+  const review = {
+    userId: new ObjectId(userId),
+    rating,
+    comment,
+    date: new Date(),
+  };
+
+  const result = await productsCollection.updateOne(
+    { _id: new ObjectId(productId) },
+    { $push: { reviews: review } }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error("Product not found");
   }
+
+  return review;
 };
 
 const deleteProductById = async (id) => {
-  try {
-    const productsCollection = await connectToDB();
-    const result = await productsCollection.deleteOne({
-      _id: ObjectId.createFromHexString(id),
-    });
-    return result.deletedCount > 0;
-  } catch (error) {
-    console.error(`Error deleting product with ID ${id}:`, error);
-    throw new Error("Failed to delete product by ID.");
-  }
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  const result = await productsCollection.deleteOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+  return result.deletedCount > 0;
 };
 
 module.exports = {
-  getProducts,
-  getProductById,
   addProduct,
+  getAllProducts,
+  getProduct,
   updateProductById,
+  addReview,
   deleteProductById,
 };

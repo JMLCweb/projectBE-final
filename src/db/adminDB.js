@@ -1,59 +1,55 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const argon2 = require("argon2");
-
-const mongoUrl = process.env.MONGO_URL;
-const client = new MongoClient(mongoUrl);
-
-const connectToDB = async () => {
-  try {
-    await client.connect();
-    const db = client.db("projectDB");
-    return db.collection("admin");
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-    throw new Error("Failed to connect to the database.");
-  }
-};
+const connectToDB = require("./connectDB");
 
 const addAdmin = async (admin) => {
-  admin.role = "admin";
+  const { email, password, ...adminData } = admin;
 
-  const adminCollection = await connectToDB();
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
 
   const timestamp = new Date();
-
-  const adminWithTimestamps = {
-    ...admin,
+  const hash = await argon2.hash(password);
+  const adminWithDate = {
+    ...adminData,
+    email,
+    password: hash,
     createdAt: timestamp,
-    updatedAt: timestamp,
   };
 
-  const result = await adminCollection.insertOne(adminWithTimestamps);
-  return { _id: result.insertedId, ...admin };
+  const result = await adminCollection.insertOne(adminWithDate);
+  return { _id: result.insertedId, ...adminWithDate };
 };
 
 const getAllAdmins = async () => {
-  const adminCollection = await connectToDB();
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
   return await adminCollection.find().toArray();
 };
 
 const getAdminById = async (id) => {
-  const adminCollection = await connectToDB();
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
   return await adminCollection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
 };
 
 const getAdminByEmail = async (email) => {
-  const adminCollection = await connectToDB();
-  return await adminCollection.findOne({ email });
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
+  const admin = await adminCollection.findOne({ email });
+  return admin;
 };
 
 const updateAdminById = async (id, admin) => {
-  const adminCollection = await connectToDB();
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
+
   if (admin.password) {
     admin.password = await argon2.hash(admin.password);
   }
+
   const result = await adminCollection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {
@@ -63,11 +59,13 @@ const updateAdminById = async (id, admin) => {
       },
     }
   );
+
   return result.matchedCount > 0;
 };
 
 const deleteAdminById = async (id) => {
-  const adminCollection = await connectToDB();
+  const db = await connectToDB();
+  const adminCollection = db.collection("admin");
   const result = await adminCollection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });

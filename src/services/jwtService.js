@@ -2,12 +2,11 @@ const jwt = require("jsonwebtoken");
 
 const jwtSecret = process.env.JWT_SECRET;
 
-function createToken(userId, email, role) {
+function createToken(id, email, role) {
   const tokenPayload = {
-    userId,
+    id,
     email,
     role,
-    tokenExpiration: getTokenExpirationDate(),
   };
 
   const token = jwt.sign(tokenPayload, jwtSecret, {
@@ -23,16 +22,11 @@ function verifyToken(token) {
   } catch (error) {
     console.log(error);
   }
+  console.log(payload);
   return payload;
-}
-function getTokenExpirationDate() {
-  const now = new Date();
-  now.setDate(now.getDate() + 1); // Set expiration to 1 day in the future
-  return now.toISOString(); // Return as ISO string
 }
 
 module.exports = {
   createToken,
   verifyToken,
-  getTokenExpirationDate,
 };

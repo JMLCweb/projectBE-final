@@ -5,9 +5,60 @@ const {
   updateUserById,
   deleteUserById,
   getUserByEmail,
+  updateUserWithVerification,
 } = require("../db/usersDB");
-const argon2 = require("argon2");
 const jwtService = require("../services/jwtService");
+const argon2 = require("argon2");
+
+const createUser = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const newUser = await addUser(req.body);
+
+    const token = jwtService.createToken(
+      newUser._id,
+      newUser.email,
+      newUser.role
+    );
+
+    res.status(201).json({ user: newUser, token });
+  } catch (error) {
+    res.status(500).json({ message: "Error Register User" });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const passwordMatch = await argon2.verify(user.password, password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Wrong password" });
+    }
+
+    const token = jwtService.createToken(user._id, user.email, user.role);
+
+    res.json({
+      status: "ok",
+      message: "User logged in",
+      token,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Login failed" });
+  }
+};
 
 const fetchAllUsers = async (req, res) => {
   try {
@@ -18,41 +69,9 @@ const fetchAllUsers = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-  const result = await getUserByEmail(email);
-
-  if (!result) {
-    res.status(400).json({
-      status: "error",
-      message: "User not found",
-    });
-    return;
-  }
-
-  const dbSavedHash = result.password;
-  const passwordMatch = await argon2.verify(dbSavedHash, password);
-  if (!passwordMatch) {
-    res.status(404).json({
-      status: "error",
-      message: "Wrong password",
-    });
-    return;
-  }
-
-  const token = jwtService.createToken(result.id, result.email, result.role);
-
-  res.json({
-    status: "ok",
-    message: "User logged in",
-    token,
-    tokenExpiration: jwtService.getTokenExpirationDate(),
-  });
-};
-
 const fetchUserById = async (req, res) => {
   try {
-    const user = await getUserById(req.params.id);
+    const user = await getUserById(req.params.userId);
     if (!user) {
       res.status(404).json({ message: "User not found" });
     } else {
@@ -63,31 +82,27 @@ const fetchUserById = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
-  const { email, password } = req.body;
+const modifyUserById = async (req, res) => {
+  const { userId } = req.params;
+
   try {
-    const existingUser = await getUserByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+    const updated = await updateUserById(userId, req.body);
+    if (!updated) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      res.json({ message: "User updated successfully" });
     }
-
-    const hash = await argon2.hash(password);
-    const newUser = await addUser({
-      ...req.body,
-      password: hash,
-    });
-
-    const token = jwtService.createToken(newUser._id, newUser.email);
-    const tokenExpiration = jwtService.getTokenExpirationDate();
-    res.status(201).json({ user: newUser, token, tokenExpiration });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const modifyUserById = async (req, res) => {
+const modifyUserWithVerification = async (req, res) => {
   try {
-    const updated = await updateUserById(req.params.id, req.body);
+    const updated = await updateUserWithVerification(
+      req.params.userId,
+      req.body
+    );
     if (!updated) {
       res.status(404).json({ message: "User not found" });
     } else {
@@ -112,10 +127,11 @@ const removeUserById = async (req, res) => {
 };
 
 module.exports = {
-  fetchAllUsers,
-  loginUser,
-  fetchUserById,
   createUser,
+  loginUser,
+  fetchAllUsers,
+  fetchUserById,
   modifyUserById,
+  modifyUserWithVerification,
   removeUserById,
 };
