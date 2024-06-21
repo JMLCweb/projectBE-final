@@ -26,23 +26,47 @@ const addToCart = async (userId, productId, quantity) => {
     throw new Error("User not found");
   }
 
-  // Verifica se o produto já está no carrinho
   const cartItemIndex = user.cart.findIndex((item) =>
     new ObjectId(item.productId).equals(new ObjectId(productId))
   );
 
   if (cartItemIndex !== -1) {
-    // Produto já está no carrinho, retorna uma mensagem de erro
     throw new Error("Product is already in the cart");
   } else {
-    // Adiciona um novo produto ao carrinho
     user.cart.push({ productId: new ObjectId(productId), quantity });
   }
 
-  // Atualiza o carrinho do usuário no banco de dados
   await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
     { $set: { cart: user.cart } }
+  );
+
+  return user.cart;
+};
+
+const updateCart = async (userId, productId, quantity) => {
+  const db = await connectToDB();
+  const usersCollection = db.collection("users");
+
+  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const cartItem = user.cart.find((item) =>
+    new ObjectId(item.productId).equals(new ObjectId(productId))
+  );
+
+  if (!cartItem) {
+    throw new Error("Product not found in cart");
+  }
+
+  cartItem.quantity = quantity;
+
+  await usersCollection.updateOne(
+    { _id: new ObjectId(userId), "cart.productId": new ObjectId(productId) },
+    { $set: { "cart.$.quantity": quantity } }
   );
 
   return user.cart;
@@ -85,6 +109,7 @@ const clearCart = async (userId) => {
 module.exports = {
   addToCart,
   removeFromCart,
+  updateCart,
   getCart,
   clearCart,
 };

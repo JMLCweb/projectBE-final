@@ -3,6 +3,7 @@ const {
   removeFromCart,
   getCart,
   clearCart,
+  updateCart,
 } = require("../db/cartDB");
 
 const fetchCart = async (req, res) => {
@@ -18,6 +19,20 @@ const addProductToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     const updatedCart = await addToCart(req.params.userId, productId, quantity);
+    res.json(updatedCart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateCartItems = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const updatedCart = await updateCart(
+      req.params.userId,
+      productId,
+      quantity
+    );
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -48,4 +63,5 @@ module.exports = {
   removeProductFromCart,
   fetchCart,
   emptyCart,
+  updateCartItems,
 };

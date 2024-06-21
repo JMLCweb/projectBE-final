@@ -14,10 +14,12 @@ const verifyId = require("../middleware/verifyId");
 
 const router = express.Router();
 
-router.post("/login", loginUser);
 router.post("/register", createUser);
+router.post("/login", loginUser);
 
 router.use(auth.isAuthenticated);
+router.get("/", checkRole("admin"), fetchAllUsers);
+
 router.get("/:userId", verifyId.IdentifyUser, fetchUserById);
 
 router.put(
@@ -27,7 +29,6 @@ router.put(
 );
 
 router.put("/update/admin/:userId", checkRole("admin"), modifyUserById);
-router.get("/", checkRole("admin"), fetchAllUsers);
 router.delete("/delete/:id", checkRole("admin"), removeUserById);
 
 module.exports = router;

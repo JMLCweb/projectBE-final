@@ -58,27 +58,6 @@ const getProductById = async (req, res) => {
     });
   }
 };
-const addProductReview = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const { rating, comment } = req.body;
-
-    const review = await addReview(
-      req.params.productId,
-      userId,
-      rating,
-      comment
-    );
-
-    res.json({ message: "Review added successfully", review });
-  } catch (error) {
-    if (error.message === "Product not found") {
-      res.status(404).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
-  }
-};
 
 const putProductById = async (req, res) => {
   const { id } = req.params;
@@ -137,6 +116,63 @@ const deleteProductById = async (req, res) => {
   }
 };
 
+const addProductReview = async (req, res) => {
+  const { userId } = req.params;
+  const { productId, rating, comment } = req.body;
+
+  try {
+    const review = await productDB.addReview(
+      productId,
+      userId,
+      rating,
+      comment
+    );
+
+    res.json({ message: "Review added successfully", review });
+  } catch (error) {
+    console.error("Error in addProductReview:", error);
+    if (error.message === "Product not found") {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
+  }
+};
+
+const addProductToFavorites = async (req, res) => {
+  const { userId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    const item = await productDB.addToFavorites(userId, productId);
+    if (!item) {
+      return res.status(409).json({ message: "Product already in favorites" });
+    }
+
+    res.json({ message: "Product added to favorites" });
+  } catch (error) {
+    console.error("Error in addProductToFavorites:", error);
+    res.status(500).json({ message: "Error adding product to favorites" });
+  }
+};
+
+const removeProductFromFavorites = async (req, res) => {
+  const { userId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    const removed = await productDB.removeFromFavorites(userId, productId);
+    if (!removed) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Product removed from favorites" });
+  } catch (error) {
+    console.error("Error in removeProductFromFavorites:", error);
+    res.status(500).json({ message: "Error removing product from favorites" });
+  }
+};
+
 module.exports = {
   newProduct,
   getProducts,
@@ -144,4 +180,6 @@ module.exports = {
   addProductReview,
   putProductById,
   deleteProductById,
+  addProductToFavorites,
+  removeProductFromFavorites,
 };

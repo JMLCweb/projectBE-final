@@ -6,7 +6,6 @@ function IdentifyUser(req, res, next) {
   }
 
   if (req.user.id !== userId) {
-    // Ensure req.user.id is used for comparison
     return res.status(403).json({ message: "Forbidden: Access is denied" });
   }
 

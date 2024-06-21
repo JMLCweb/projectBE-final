@@ -1,20 +1,23 @@
 const express = require("express");
-const {
-  addProductToCart,
-  removeProductFromCart,
-  fetchCart,
-  emptyCart,
-} = require("../controllers/cartController");
+const cartController = require("../controllers/cartController");
 const auth = require("../middleware/auth");
 const verifyId = require("../middleware/verifyId");
 
 const router = express.Router();
 
 router.use(auth.isAuthenticated);
-
-router.post("/add/:userId", verifyId.IdentifyUser, addProductToCart);
-router.get("/:userId", verifyId.IdentifyUser, fetchCart); // Verificação de ID necessária
-router.delete("/remove", removeProductFromCart);
-router.post("/clear/:userId", verifyId.IdentifyUser, emptyCart);
+router.get("/:userId", verifyId.IdentifyUser, cartController.fetchCart);
+router.post(
+  "/add/:userId",
+  verifyId.IdentifyUser,
+  cartController.addProductToCart
+);
+router.delete("/remove", cartController.removeProductFromCart);
+router.post("/clear/:userId", verifyId.IdentifyUser, cartController.emptyCart);
+router.put(
+  "/update/:userId",
+  verifyId.IdentifyUser,
+  cartController.updateCartItems
+);
 
 module.exports = router;

@@ -42,7 +42,7 @@ const addReview = async (productId, userId, rating, comment) => {
   const productsCollection = db.collection("products");
 
   const review = {
-    userId: new ObjectId(userId),
+    userId,
     rating,
     comment,
     date: new Date(),
@@ -69,6 +69,60 @@ const deleteProductById = async (id) => {
   return result.deletedCount > 0;
 };
 
+const addToFavorites = async (userId, productId) => {
+  const db = await connectToDB();
+  const usersCollection = db.collection("users");
+
+  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const isAlreadyFavorite = user.favorites.some((favorite) =>
+    new ObjectId(favorite.productId).equals(new ObjectId(productId))
+  );
+
+  if (isAlreadyFavorite) {
+    return false;
+  }
+
+  const favorite = {
+    productId,
+    date: new Date(),
+  };
+  const result = await usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $addToSet: { favorites: favorite } }
+  );
+
+  console.log(`Update result: ${JSON.stringify(result)}`);
+
+  return result.matchedCount > 0;
+};
+
+const removeFromFavorites = async (userId, productId) => {
+  const db = await connectToDB();
+  const usersCollection = db.collection("users");
+
+  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  user.favorites = user.favorites.filter(
+    (item) => !new ObjectId(item.productId).equals(new ObjectId(productId))
+  );
+
+  await usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { favorites: user.favorites } }
+  );
+
+  return user.favorites;
+};
+
 module.exports = {
   addProduct,
   getAllProducts,
@@ -76,4 +130,6 @@ module.exports = {
   updateProductById,
   addReview,
   deleteProductById,
+  addToFavorites,
+  removeFromFavorites,
 };
