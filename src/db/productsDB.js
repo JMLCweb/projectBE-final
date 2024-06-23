@@ -60,7 +60,7 @@ const addReview = async (productId, userId, rating, comment) => {
   return review;
 };
 
-const editReview = async (productId, reviewId, userId, updatedReview) => {
+const editReview = async (productId, reviewId, userId, rating, comment) => {
   const db = await connectToDB();
   const productsCollection = db.collection("products");
   const product = await productsCollection.findOne({
@@ -74,15 +74,15 @@ const editReview = async (productId, reviewId, userId, updatedReview) => {
   }
 
   const review = product.reviews.find(
-    (r) => r._id.equals(new ObjectId(reviewId)) && r.userId === userId
+    (item) => item._id.equals(new ObjectId(reviewId)) && item.userId === userId
   );
 
   if (!review) {
     throw new Error("Review not found or user not authorized");
   }
 
-  review.rating = updatedReview.rating;
-  review.comment = updatedReview.comment;
+  review.rating = rating;
+  review.comment = comment;
   review.updatedAt = new Date();
 
   const result = await productsCollection.updateOne(

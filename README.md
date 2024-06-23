@@ -48,6 +48,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/godmode/update/{adminId}`
 - **Authorization:** Requires admin authentication and token.
+- **Payload:**
   ```json
   {
     "name": "password",
@@ -69,6 +70,7 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/users/register`
 - **Description:** Registers a new user.
+- **Payload:**
   ```json
   {
     "name": "name",
@@ -84,6 +86,7 @@
 
 - **Method:** POST
 - **URL:** `http://localhost:3000/users/login`
+- **Payload:**
   ```json
   {
     "email": "1@21.com",
@@ -108,6 +111,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/users/update/{userId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "password": "new Password",
@@ -120,6 +124,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/users/update/admin/{userId}`
 - **Authorization:** Requires admin authentication and token.
+- **Payload:**
   ```json
   {
     "name": "new Name",
@@ -152,6 +157,7 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/products`
 - **Authorization:** Requires admin authentication and token.
+- **Payload:**
   ```json
   {
     "name": "name",
@@ -166,6 +172,7 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/products/review/{userId}`
 - **Authorization:** Requires user authentication and token.
+  - **Payload:**
   ```json
   {
     "productId": "productId",
@@ -179,6 +186,7 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/products/favorites/{userId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "productId": "productId"
@@ -190,6 +198,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/products/review/{userId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "productId": "productId",
@@ -204,6 +213,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/products/{productId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "name": "new name",
@@ -216,7 +226,7 @@
 - **Method:** DELETE
 - **URL:** `http://localhost:3000/products/review/delete`
 - **Authorization:** Requires admin authentication and token.
-
+- **Payload:**
   ```json
   {
     "reviewId": "reviewId",
@@ -224,11 +234,12 @@
   }
   ```
 
-  ### deleteFavorite
+### deleteFavorite
 
 - **Method:** DELETE
 - **URL:** `http://localhost:3000/products/favorites/{userId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "productId": "productId"
@@ -254,6 +265,7 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/cart/add`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "productId": "productId",
@@ -266,6 +278,7 @@
 - **Method:** PUT
 - **URL:** `http://localhost:3000/cart/update/{userId}`
 - **Authorization:** Requires user authentication and token.
+- **Payload:**
   ```json
   {
     "productId": "productId",
@@ -278,12 +291,12 @@
 - **Method:** DELETE
 - **URL:** `http://localhost:3000/cart/remove/{userId}`
 - **Authorization:** Requires user/admin authentication and token.
-
-```json
-{
-  "productId": "productId"
-}
-```
+- **Payload:**
+  ```json
+  {
+    "productId": "productId"
+  }
+  ```
 
 ### ClearCart
 
@@ -316,10 +329,10 @@
 - **Method:** POST
 - **URL:** `http://localhost:3000/orders/update/{orderId}`
 - **Authorization:** Requires admin authentication and token.
-
-```json
-{
-  "status": "new status",
-  "notes": "order note"
-}
-```
+- **Payload:**
+  ```json
+  {
+    "status": "new status",
+    "notes": "order note"
+  }
+  ```

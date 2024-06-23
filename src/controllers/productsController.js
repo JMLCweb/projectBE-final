@@ -138,15 +138,19 @@ const addProductReview = async (req, res) => {
     }
   }
 };
+
 const editProductReview = async (req, res) => {
   const { userId } = req.params;
   const { rating, comment, productId, reviewId } = req.body;
 
   try {
-    const result = await productDB.editReview(productId, reviewId, userId, {
+    const result = await productDB.editReview(
+      productId,
+      reviewId,
+      userId,
       rating,
-      comment,
-    });
+      comment
+    );
 
     if (result.modifiedCount === 0) {
       return res
