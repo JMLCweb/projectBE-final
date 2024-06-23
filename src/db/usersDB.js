@@ -6,7 +6,7 @@ const addUser = async (user) => {
   const { password, address, zipcode, ...otherUserData } = user;
   const hashedPassword = await argon2.hash(password);
 
-  const userWithHashes = {
+  const newUser = {
     ...otherUserData,
     password: hashedPassword,
     address: address,
@@ -20,9 +20,9 @@ const addUser = async (user) => {
 
   const db = await connectToDB();
   const usersCollection = db.collection("users");
-  const result = await usersCollection.insertOne(userWithHashes);
+  const result = await usersCollection.insertOne(newUser);
 
-  return { _id: result.insertedId, ...userWithHashes };
+  return { _id: result.insertedId, ...newUser };
 };
 
 const getUserByEmail = async (email) => {

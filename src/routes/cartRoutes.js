@@ -12,8 +12,13 @@ router.post(
   verifyId.IdentifyUser,
   cartController.addProductToCart
 );
-router.delete("/remove", cartController.removeProductFromCart);
+router.delete(
+  "/remove/:userId",
+  verifyId.IdentifyUser,
+  cartController.removeProductFromCart
+);
 router.post("/clear/:userId", verifyId.IdentifyUser, cartController.emptyCart);
+
 router.put(
   "/update/:userId",
   verifyId.IdentifyUser,

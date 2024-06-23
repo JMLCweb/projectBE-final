@@ -8,17 +8,16 @@ const addAdmin = async (admin) => {
   const db = await connectToDB();
   const adminCollection = db.collection("admin");
 
-  const timestamp = new Date();
   const hash = await argon2.hash(password);
-  const adminWithDate = {
+  const newAdmin = {
     ...adminData,
     email,
     password: hash,
-    createdAt: timestamp,
+    createdAt: new Date(),
   };
 
-  const result = await adminCollection.insertOne(adminWithDate);
-  return { _id: result.insertedId, ...adminWithDate };
+  const result = await adminCollection.insertOne(newAdmin);
+  return { _id: result.insertedId, ...newAdmin };
 };
 
 const getAllAdmins = async () => {

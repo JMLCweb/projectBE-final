@@ -4,13 +4,12 @@ const connectToDB = require("./connectDB");
 const addProduct = async (product) => {
   const db = await connectToDB();
   const productsCollection = db.collection("products");
-  const timestamp = new Date();
-  const productWithDate = {
+  const newProduct = {
     ...product,
-    createdAt: timestamp,
+    createdAt: new Date(),
   };
-  const result = await productsCollection.insertOne(productWithDate);
-  return { id: result.insertedId, ...productWithDate };
+  const result = await productsCollection.insertOne(newProduct);
+  return { id: result.insertedId, ...newProduct };
 };
 
 const getAllProducts = async () => {
@@ -42,10 +41,11 @@ const addReview = async (productId, userId, rating, comment) => {
   const productsCollection = db.collection("products");
 
   const review = {
+    _id: new ObjectId(),
     userId,
     rating,
     comment,
-    date: new Date(),
+    createdAt: new Date(),
   };
 
   const result = await productsCollection.updateOne(
@@ -58,6 +58,59 @@ const addReview = async (productId, userId, rating, comment) => {
   }
 
   return review;
+};
+
+const editReview = async (productId, reviewId, userId, updatedReview) => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  const product = await productsCollection.findOne({
+    _id: new ObjectId(productId),
+    "reviews._id": new ObjectId(reviewId),
+    "reviews.userId": userId,
+  });
+
+  if (!product) {
+    throw new Error("Review not found or user not authorized");
+  }
+
+  const review = product.reviews.find(
+    (r) => r._id.equals(new ObjectId(reviewId)) && r.userId === userId
+  );
+
+  if (!review) {
+    throw new Error("Review not found or user not authorized");
+  }
+
+  review.rating = updatedReview.rating;
+  review.comment = updatedReview.comment;
+  review.updatedAt = new Date();
+
+  const result = await productsCollection.updateOne(
+    { _id: new ObjectId(productId) },
+    { $set: { reviews: product.reviews } }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error("Review not found or user not authorized");
+  }
+
+  return result;
+};
+
+const removeReview = async (productId, reviewId) => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+
+  const result = await productsCollection.updateOne(
+    { _id: new ObjectId(productId) },
+    { $pull: { reviews: { _id: new ObjectId(reviewId) } } }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error("Product or review not found");
+  }
+
+  return result;
 };
 
 const deleteProductById = async (id) => {
@@ -129,6 +182,8 @@ module.exports = {
   getProduct,
   updateProductById,
   addReview,
+  editReview,
+  removeReview,
   deleteProductById,
   addToFavorites,
   removeFromFavorites,

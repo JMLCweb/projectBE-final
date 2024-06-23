@@ -138,6 +138,45 @@ const addProductReview = async (req, res) => {
     }
   }
 };
+const editProductReview = async (req, res) => {
+  const { userId } = req.params;
+  const { rating, comment, productId, reviewId } = req.body;
+
+  try {
+    const result = await productDB.editReview(productId, reviewId, userId, {
+      rating,
+      comment,
+    });
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Review not found or user not authorized" });
+    }
+
+    res.json({ message: "Review edited successfully" });
+  } catch (error) {
+    console.error("Error in editProductReview:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const removeProductReview = async (req, res) => {
+  const { reviewId, productId } = req.body;
+
+  try {
+    const result = await productDB.removeReview(productId, reviewId);
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.json({ message: "Review removed successfully" });
+  } catch (error) {
+    console.error("Error in removeProductReview:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 const addProductToFavorites = async (req, res) => {
   const { userId } = req.params;
@@ -178,6 +217,8 @@ module.exports = {
   getProducts,
   getProductById,
   addProductReview,
+  editProductReview,
+  removeProductReview,
   putProductById,
   deleteProductById,
   addProductToFavorites,

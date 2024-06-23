@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const productsRoutes = require("../src/routes/productsRouter");
+const productsRoutes = require("../src/routes/productsRoutes");
 app.use("/products", productsRoutes);
 
 const cart = require("../src/routes/cartRoutes");

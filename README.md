@@ -1,100 +1,325 @@
-# ROUTES
+# API Routes Documentation
 
-# Admin
+## Admin Routes
 
-GetAdminById - GET
-http://localhost:3000/godmode/{id}
-need auth and Token
+### Get Admin By ID
 
-GetAllAdmins - GET
-http://localhost:3000/godmode/
-need auth and token
+- **Method:** GET
+- **URL:** `http://localhost:3000/godmode/{adminId}`
+- **Description:** Fetches the admin details by ID.
+- **Authorization:** Requires admin authentication and token.
 
-RegisterAdmin - POST
-http://localhost:3000/godmode/register
-{JSON}
+### Get All Admins
 
-LoginAdmin - POST
-http://localhost:3000/godmode/login
-{JSON}
+- **Method:** GET
+- **URL:** `http://localhost:3000/godmode/`
+- **Description:** Fetches the list of all admins.
+- **Authorization:** Requires admin authentication and token.
 
-RegisterUser - POST
-http://localhost:3000/users/register
-{JSON}
+### Register Admin
 
-UpdateAdmin - PUT
-http://localhost:3000/godmode/update/{id}
-{JSON}
-need auth and token
-nao é de ti
-deleteAdmin - DEL
-http://localhost:3000/godmode/delete/%7Bid%7D
-need auth and token
+- **Method:** POST
+- **URL:** `http://localhost:3000/godmode/register`
+- **Description:** Registers a new admin.
+- **Payload:**
+  ```json
+  {
+    "name": "exemplo",
+    "email": "exemplo@exemplo.com",
+    "password": "password"
+  }
+  ```
 
-# Users
+### LoginAdmin
 
-LoginUser - POST
-http://localhost:3000/users/login
-{JSON}
+- **Method:** POST
+- **URL:** `http://localhost:3000/godmode/login`
+- **Description:** Login admin.
+- **Payload:**
+  ```json
+  {
+    "email": "exemplo@exemplo.com",
+    "password": "password"
+  }
+  ```
 
-GetUserID - GET
-http://localhost:3000/users/{id}
-need auth and token
+### UpdateAdmin
 
-GetAllUsers - GET
-http://localhost:3000/users
-need auth and token
+- **Method:** PUT
+- **URL:** `http://localhost:3000/godmode/update/{adminId}`
+- **Authorization:** Requires admin authentication and token.
+  ```json
+  {
+    "name": "password",
+    "password": "exemplo",
+    "...": "..."
+  }
+  ```
 
-UpdateUser - PUT
-http://localhost:3000/users/update/{id}
-{JSON}
-need auth and token
+### DeleteAdmin
 
-deleteUserId - DEL
-http://localhost:3000/users/delete/{id}
-need auth and token
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/godmode/delete/{adminId}`
+- **Authorization:** Requires admin authentication and token.
 
-# Products
+## Users
 
-GetAllProducts - GET
-http://localhost:3000/products
+### RegisterUser
 
-GetProductsId - GET
-http://localhost:3000/products/{id}
+- **Method:** POST
+- **URL:** `http://localhost:3000/users/register`
+- **Description:** Registers a new user.
+  ```json
+  {
+    "name": "name",
+    "email": "email@email.com",
+    "password": "password",
+    "country": "Portugal",
+    "address": "Rua de teste,8",
+    "zipcode": "1111-222"
+  }
+  ```
 
-AddProduct - POST
-http://localhost:3000/products
-{JSON}
-need auth and token
+### LoginUser
 
-UpdateProduct - PUT
-http://localhost:3000/products/{id}
-{JSON}
-need auth and token
+- **Method:** POST
+- **URL:** `http://localhost:3000/users/login`
+  ```json
+  {
+    "email": "1@21.com",
+    "password": "123"
+  }
+  ```
 
-deleteProductId - DEL
-http://localhost:3000/products/{id}
-need auth and token
+### GetUserID
 
-# Orders
+- **Method:** GET
+- **URL:** `http://localhost:3000/users/{userId}`
+- **Authorization:** Requires user/admin authentication and token.
 
-# Cart
+### GetAllUsers
 
-GetCartUserId - GET
-http://localhost:3000/cart/{id}
-need auth and token
+- **Method:** GET
+- **URL:** `http://localhost:3000/users`
+- **Authorization:** Requires admin authentication and token.
 
-AddCartProduct - POST
-http://localhost:3000/cart/add
-{JSON}
-"userId":"",
-"ProductId":"",
-"quantity":""
-login an token
+### UpdateUserWithVerification
 
-ClearCart - POST
-http://localhost:3000/cart/clear/{id}
+- **Method:** PUT
+- **URL:** `http://localhost:3000/users/update/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "password": "new Password",
+    "oldPassword": "old Password"
+  }
+  ```
 
-deleteCartProduct - DEL
-http://localhost:3000/cart/remove
-login and token
+### UpdateUserWithAdmin
+
+- **Method:** PUT
+- **URL:** `http://localhost:3000/users/update/admin/{userId}`
+- **Authorization:** Requires admin authentication and token.
+  ```json
+  {
+    "name": "new Name",
+    "password": "new Password"
+  }
+  ```
+
+### deleteUserId
+
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/users/delete/{userId}`
+- **Authorization:** Requires admin authentication and token.
+
+## Products
+
+### GetProducts
+
+- **Method:** GET
+- **URL:** `http://localhost:3000/products`
+- **Authorization:** No Auth needed.
+
+### GetProductId
+
+- **Method:** GET
+- **URL:** `http://localhost:3000/products/{productId}`
+- **Authorization:** No Auth needed.
+
+### AddProduct
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/products`
+- **Authorization:** Requires admin authentication and token.
+  ```json
+  {
+    "name": "name",
+    "price": "price",
+    "category": "category",
+    "description": "description"
+  }
+  ```
+
+### AddProductReview
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/products/review/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId",
+    "rating": "rating",
+    "comment": "comment"
+  }
+  ```
+
+### AddToFavorites
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/products/favorites/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId"
+  }
+  ```
+
+### editProductReview
+
+- **Method:** PUT
+- **URL:** `http://localhost:3000/products/review/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId",
+    "reviewId": "reviewId",
+    "rating": "new rating",
+    "comment": "new comment"
+  }
+  ```
+
+### UpdateProduct
+
+- **Method:** PUT
+- **URL:** `http://localhost:3000/products/{productId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "name": "new name",
+    "stock": "new stock"
+  }
+  ```
+
+### deleteProductReview
+
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/products/review/delete`
+- **Authorization:** Requires admin authentication and token.
+
+  ```json
+  {
+    "reviewId": "reviewId",
+    "productId": "productId"
+  }
+  ```
+
+  ### deleteFavorite
+
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/products/favorites/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId"
+  }
+  ```
+
+### deleteProductId
+
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/products/{productId}`
+- **Authorization:** Requires admin authentication and token.
+
+## Cart
+
+### GetCartUserId
+
+- **Method:** GET
+- **URL:** `http://localhost:3000/cart/{userId}`
+- **Authorization:** Requires user/admin authentication and token.
+
+### AddCartProduct
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/cart/add`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId",
+    "quantity": "1"
+  }
+  ```
+
+### UpdateCartUserId
+
+- **Method:** PUT
+- **URL:** `http://localhost:3000/cart/update/{userId}`
+- **Authorization:** Requires user authentication and token.
+  ```json
+  {
+    "productId": "productId",
+    "quantity": "new quantity"
+  }
+  ```
+
+### deleteCartProduct - DEL
+
+- **Method:** DELETE
+- **URL:** `http://localhost:3000/cart/remove/{userId}`
+- **Authorization:** Requires user/admin authentication and token.
+
+```json
+{
+  "productId": "productId"
+}
+```
+
+### ClearCart
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/cart/clear/{userId}`
+- **Authorization:** Requires user/admin authentication and token.
+
+## Orders
+
+### Checkout
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/orders/checkout/{userId}`
+- **Authorization:** Requires user authentication and token.
+
+### GetAllOrders
+
+- **Method:** GET
+- **URL:** `http://localhost:3000/orders`
+- **Authorization:** Requires admin authentication and token.
+
+### GetOrderById
+
+- **Method:** GET
+- **URL:** `http://localhost:3000/orders/{orderId}`
+- **Authorization:** Requires admin authentication and token.
+
+### UpdateOrder
+
+- **Method:** POST
+- **URL:** `http://localhost:3000/orders/update/{orderId}`
+- **Authorization:** Requires admin authentication and token.
+
+```json
+{
+  "status": "new status",
+  "notes": "order note"
+}
+```

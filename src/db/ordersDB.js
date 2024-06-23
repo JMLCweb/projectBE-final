@@ -20,9 +20,9 @@ const checkout = async (userId) => {
     _id: new ObjectId(),
     userId: user._id,
     items: user.cart,
-    orderDate: new Date(),
     status: "pending",
     notes: "Order Info",
+    orderDate: new Date(),
   };
 
   await ordersCollection.insertOne(newOrder);

@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const connectToDB = require("./connectDB");
+const { getProduct } = require("../db/productsDB");
 
 const getCart = async (userId) => {
   const db = await connectToDB();
@@ -32,9 +33,17 @@ const addToCart = async (userId, productId, quantity) => {
 
   if (cartItemIndex !== -1) {
     throw new Error("Product is already in the cart");
-  } else {
-    user.cart.push({ productId: new ObjectId(productId), quantity });
   }
+
+  const product = await getProduct(productId);
+
+  user.cart.push({
+    productId: new ObjectId(product._id),
+    name: product.name,
+    price: product.price,
+    quantity,
+    createdAt: new Date(),
+  });
 
   await usersCollection.updateOne(
     { _id: new ObjectId(userId) },

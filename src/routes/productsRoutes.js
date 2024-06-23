@@ -8,6 +8,9 @@ router.get("/", productsController.getProducts);
 router.get("/:id", productsController.getProductById);
 
 router.use(auth.isAuthenticated);
+router.post("/add", checkRole("admin"), productsController.newProduct);
+router.put("/update/:id", productsController.putProductById);
+
 router.post(
   "/favorites/:userId",
   verifyId.IdentifyUser,
@@ -15,13 +18,22 @@ router.post(
 );
 
 router.post(
-  "/reviews/:userId",
+  "/review/:userId",
   verifyId.IdentifyUser,
   productsController.addProductReview
 );
 
-router.post("/add", checkRole("admin"), productsController.newProduct);
-router.put("/update/:id", productsController.putProductById);
+router.put(
+  "/review/:userId",
+  verifyId.IdentifyUser,
+  productsController.editProductReview
+);
+
+router.delete(
+  "/review/delete",
+  checkRole("admin"),
+  productsController.removeProductReview
+);
 
 router.delete(
   "/delete/:id",
@@ -30,6 +42,7 @@ router.delete(
 );
 router.delete(
   "/favorites/:userId",
+  verifyId.IdentifyUser,
   productsController.removeProductFromFavorites
 );
 
