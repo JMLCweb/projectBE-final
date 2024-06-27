@@ -1,4 +1,4 @@
-const cartDB = require("../db/cartDB");
+const cartDB = require('../db/cartDB');
 
 const fetchCart = async (req, res) => {
   try {

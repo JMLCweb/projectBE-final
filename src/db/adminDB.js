@@ -1,19 +1,19 @@
-const { ObjectId } = require("mongodb");
-const argon2 = require("argon2");
-const connectToDB = require("./connectDB");
+const { ObjectId } = require('mongodb');
+const argon2 = require('argon2');
+const connectToDB = require('./connectDB');
 
 const addAdmin = async (admin) => {
   const { email, password, ...adminData } = admin;
 
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
 
   const hash = await argon2.hash(password);
   const newAdmin = {
     ...adminData,
     email,
     password: hash,
-    role: "admin",
+    role: 'admin',
     createdAt: new Date(),
   };
 
@@ -23,13 +23,13 @@ const addAdmin = async (admin) => {
 
 const getAllAdmins = async () => {
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
   return await adminCollection.find().toArray();
 };
 
 const getAdminById = async (id) => {
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
   return await adminCollection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
@@ -37,14 +37,14 @@ const getAdminById = async (id) => {
 
 const getAdminByEmail = async (email) => {
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
   const admin = await adminCollection.findOne({ email });
   return admin;
 };
 
 const updateAdminById = async (id, admin) => {
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
 
   if (admin.password) {
     admin.password = await argon2.hash(admin.password);
@@ -65,7 +65,7 @@ const updateAdminById = async (id, admin) => {
 
 const deleteAdminById = async (id) => {
   const db = await connectToDB();
-  const adminCollection = db.collection("admin");
+  const adminCollection = db.collection('admin');
   const result = await adminCollection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });

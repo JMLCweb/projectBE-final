@@ -1,6 +1,6 @@
-const { ObjectId } = require("mongodb");
-const argon2 = require("argon2");
-const connectToDB = require("./connectDB");
+const { ObjectId } = require('mongodb');
+const argon2 = require('argon2');
+const connectToDB = require('./connectDB');
 
 const addUser = async (user) => {
   const { password, address, zipcode, ...otherUserData } = user;
@@ -13,12 +13,12 @@ const addUser = async (user) => {
     zipcode: zipcode,
     cart: [],
     favorites: [],
-    role: "user",
+    role: 'user',
     createdAt: new Date(),
   };
 
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   const result = await usersCollection.insertOne(newUser);
 
   return { _id: result.insertedId, ...newUser };
@@ -26,20 +26,20 @@ const addUser = async (user) => {
 
 const getUserByEmail = async (email) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   const user = await usersCollection.findOne({ email });
   return user;
 };
 
 const getAllUsers = async () => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   return await usersCollection.find().toArray();
 };
 
 const getUserById = async (userId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   return await usersCollection.findOne({
     _id: ObjectId.createFromHexString(userId),
   });
@@ -47,7 +47,7 @@ const getUserById = async (userId) => {
 
 const updateUserById = async (userId, user) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   if (user.password) {
     user.password = await argon2.hash(user.password);
   }
@@ -65,7 +65,7 @@ const updateUserById = async (userId, user) => {
 
 const updateUserWithVerification = async (userId, user) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   try {
     const existingUser = await usersCollection.findOne({
       _id: ObjectId.createFromHexString(userId),
@@ -100,14 +100,14 @@ const updateUserWithVerification = async (userId, user) => {
 
     return result.matchedCount > 0;
   } catch (error) {
-    console.error("Error updating user with password verification:", error);
-    throw new Error("Failed to update user with password verification.");
+    console.error('Error updating user with password verification:', error);
+    throw new Error('Failed to update user with password verification.');
   }
 };
 
 const deleteUserById = async (id) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
   const result = await usersCollection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });

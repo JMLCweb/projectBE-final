@@ -1,4 +1,4 @@
-const ordersDB = require("../db/ordersDB");
+const ordersDB = require('../db/ordersDB');
 
 const fetchAllOrders = async (req, res) => {
   try {
@@ -13,7 +13,7 @@ const fetchOrderById = async (req, res) => {
   try {
     const order = await ordersDB.getOrderById(req.params.orderId);
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res.status(404).json({ message: 'Order not found' });
     } else {
       res.json(order);
     }
@@ -27,7 +27,7 @@ const newOrderStatus = async (req, res) => {
   try {
     const order = await ordersDB.getOrderById(req.params.orderId);
     if (!order) {
-      res.status(404).json({ message: "Order not found" });
+      res.status(404).json({ message: 'Order not found' });
       return;
     }
 
@@ -37,15 +37,15 @@ const newOrderStatus = async (req, res) => {
       notes
     );
     if (!updated) {
-      res.status(500).json({ message: "Failed to update order status" });
+      res.status(500).json({ message: 'Failed to update order status' });
       return;
     }
 
-    if (status === "completed") {
+    if (status === 'completed') {
       await ordersDB.moveOrderToHistory(order.userId, req.params.orderId);
     }
 
-    res.json({ message: "Order status Completed and moved for history" });
+    res.json({ message: 'Order status Completed and moved for history' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,9 +1,9 @@
-const { ObjectId } = require("mongodb");
-const connectToDB = require("./connectDB");
+const { ObjectId } = require('mongodb');
+const connectToDB = require('./connectDB');
 
 const addProduct = async (product) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   const newProduct = {
     ...product,
     createdAt: new Date(),
@@ -14,13 +14,13 @@ const addProduct = async (product) => {
 
 const getAllProducts = async () => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   return await productsCollection.find().toArray();
 };
 
 const getProduct = async (id) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   return await productsCollection.findOne({
     _id: ObjectId.createFromHexString(id),
   });
@@ -28,7 +28,7 @@ const getProduct = async (id) => {
 
 const updateProductById = async (id, product) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   const result = await productsCollection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     { $set: { ...product, updatedAt: new Date() } }
@@ -38,7 +38,7 @@ const updateProductById = async (id, product) => {
 
 const deleteProductById = async (id) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   const result = await productsCollection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });
@@ -47,7 +47,7 @@ const deleteProductById = async (id) => {
 
 const addReview = async (productId, userId, rating, comment) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
 
   const review = {
     _id: new ObjectId(),
@@ -63,7 +63,7 @@ const addReview = async (productId, userId, rating, comment) => {
   );
 
   if (result.matchedCount === 0) {
-    throw new Error("Product not found");
+    throw new Error('Product not found');
   }
 
   return review;
@@ -71,15 +71,15 @@ const addReview = async (productId, userId, rating, comment) => {
 
 const editReview = async (productId, reviewId, userId, rating, comment) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
   const product = await productsCollection.findOne({
     _id: new ObjectId(productId),
-    "reviews._id": new ObjectId(reviewId),
-    "reviews.userId": userId,
+    'reviews._id': new ObjectId(reviewId),
+    'reviews.userId': userId,
   });
 
   if (!product) {
-    throw new Error("Review not found or user not authorized");
+    throw new Error('Review not found or user not authorized');
   }
 
   const review = product.reviews.find(
@@ -87,7 +87,7 @@ const editReview = async (productId, reviewId, userId, rating, comment) => {
   );
 
   if (!review) {
-    throw new Error("Review not found or user not authorized");
+    throw new Error('Review not found or user not authorized');
   }
 
   review.rating = rating;
@@ -100,7 +100,7 @@ const editReview = async (productId, reviewId, userId, rating, comment) => {
   );
 
   if (result.matchedCount === 0) {
-    throw new Error("Review not found or user not authorized");
+    throw new Error('Review not found or user not authorized');
   }
 
   return result;
@@ -108,7 +108,7 @@ const editReview = async (productId, reviewId, userId, rating, comment) => {
 
 const removeReview = async (productId, reviewId) => {
   const db = await connectToDB();
-  const productsCollection = db.collection("products");
+  const productsCollection = db.collection('products');
 
   const result = await productsCollection.updateOne(
     { _id: new ObjectId(productId) },
@@ -116,7 +116,7 @@ const removeReview = async (productId, reviewId) => {
   );
 
   if (result.matchedCount === 0) {
-    throw new Error("Product or review not found");
+    throw new Error('Product or review not found');
   }
 
   return result;
@@ -124,12 +124,12 @@ const removeReview = async (productId, reviewId) => {
 
 const addToFavorites = async (userId, productId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const isAlreadyFavorite = user.favorites.some((favorite) =>
@@ -156,12 +156,12 @@ const addToFavorites = async (userId, productId) => {
 
 const removeFromFavorites = async (userId, productId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   user.favorites = user.favorites.filter(

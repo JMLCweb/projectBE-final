@@ -1,17 +1,17 @@
-const { ObjectId } = require("mongodb");
-const connectToDB = require("./connectDB");
-const { getProduct } = require("../db/productsDB");
+const { ObjectId } = require('mongodb');
+const connectToDB = require('./connectDB');
+const { getProduct } = require('../db/productsDB');
 
 const getCart = async (userId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({
     _id: ObjectId.createFromHexString(userId),
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   return user.cart;
@@ -19,12 +19,12 @@ const getCart = async (userId) => {
 
 const addToCart = async (userId, productId, quantity) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const cartItemIndex = user.cart.findIndex((item) =>
@@ -32,7 +32,7 @@ const addToCart = async (userId, productId, quantity) => {
   );
 
   if (cartItemIndex !== -1) {
-    throw new Error("Product is already in the cart");
+    throw new Error('Product is already in the cart');
   }
 
   const product = await getProduct(productId);
@@ -55,12 +55,12 @@ const addToCart = async (userId, productId, quantity) => {
 
 const updateCart = async (userId, productId, quantity) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const cartItem = user.cart.find((item) =>
@@ -68,14 +68,14 @@ const updateCart = async (userId, productId, quantity) => {
   );
 
   if (!cartItem) {
-    throw new Error("Product not found in cart");
+    throw new Error('Product not found in cart');
   }
 
   cartItem.quantity = quantity;
 
   await usersCollection.updateOne(
-    { _id: new ObjectId(userId), "cart.productId": new ObjectId(productId) },
-    { $set: { "cart.$.quantity": quantity } }
+    { _id: new ObjectId(userId), 'cart.productId': new ObjectId(productId) },
+    { $set: { 'cart.$.quantity': quantity } }
   );
 
   return user.cart;
@@ -83,12 +83,12 @@ const updateCart = async (userId, productId, quantity) => {
 
 const removeFromCart = async (userId, productId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   user.cart = user.cart.filter(
@@ -105,7 +105,7 @@ const removeFromCart = async (userId, productId) => {
 
 const clearCart = async (userId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection('users');
 
   const user = await usersCollection.updateOne(
     { _id: ObjectId.createFromHexString(userId) },

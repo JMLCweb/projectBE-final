@@ -1,27 +1,27 @@
-const { ObjectId } = require("mongodb");
-const connectToDB = require("./connectDB");
+const { ObjectId } = require('mongodb');
+const connectToDB = require('./connectDB');
 
 const checkout = async (userId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
-  const ordersCollection = db.collection("orders");
+  const usersCollection = db.collection('users');
+  const ordersCollection = db.collection('orders');
 
   const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   if (!user.cart || user.cart.length === 0) {
-    throw new Error("Cart is empty");
+    throw new Error('Cart is empty');
   }
 
   const newOrder = {
     _id: new ObjectId(),
     userId: user._id,
     items: user.cart,
-    status: "pending",
-    notes: "Order Info",
+    status: 'pending',
+    notes: 'Order Info',
     orderDate: new Date(),
   };
 
@@ -37,19 +37,19 @@ const checkout = async (userId) => {
 
 const getAllOrders = async () => {
   const db = await connectToDB();
-  const ordersCollection = db.collection("orders");
+  const ordersCollection = db.collection('orders');
   return await ordersCollection.find().toArray();
 };
 
 const getOrderById = async (orderId) => {
   const db = await connectToDB();
-  const ordersCollection = db.collection("orders");
+  const ordersCollection = db.collection('orders');
   return await ordersCollection.findOne({ _id: new ObjectId(orderId) });
 };
 
 const updateOrderStatus = async (orderId, status, notes) => {
   const db = await connectToDB();
-  const ordersCollection = db.collection("orders");
+  const ordersCollection = db.collection('orders');
 
   const updateData = {
     status,
@@ -72,8 +72,8 @@ const updateOrderStatus = async (orderId, status, notes) => {
 
 const moveOrderToHistory = async (userId, orderId) => {
   const db = await connectToDB();
-  const usersCollection = db.collection("users");
-  const ordersCollection = db.collection("orders");
+  const usersCollection = db.collection('users');
+  const ordersCollection = db.collection('orders');
 
   const order = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
   if (!order) return false;
