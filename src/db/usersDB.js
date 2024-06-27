@@ -13,7 +13,6 @@ const addUser = async (user) => {
     zipcode: zipcode,
     cart: [],
     favorites: [],
-    orders: [],
     role: "user",
     createdAt: new Date(),
   };

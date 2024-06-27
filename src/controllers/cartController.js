@@ -1,14 +1,8 @@
-const {
-  addToCart,
-  removeFromCart,
-  getCart,
-  clearCart,
-  updateCart,
-} = require("../db/cartDB");
+const cartDB = require("../db/cartDB");
 
 const fetchCart = async (req, res) => {
   try {
-    const cart = await getCart(req.params.userId);
+    const cart = await cartDB.getCart(req.params.userId);
     res.json(cart);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -18,7 +12,11 @@ const fetchCart = async (req, res) => {
 const addProductToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    const updatedCart = await addToCart(req.params.userId, productId, quantity);
+    const updatedCart = await cartDB.addToCart(
+      req.params.userId,
+      productId,
+      quantity
+    );
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,7 +26,7 @@ const addProductToCart = async (req, res) => {
 const updateCartItems = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    const updatedCart = await updateCart(
+    const updatedCart = await cartDB.updateCart(
       req.params.userId,
       productId,
       quantity
@@ -43,7 +41,7 @@ const removeProductFromCart = async (req, res) => {
   try {
     const { productId } = req.body;
     const { userId } = req.params;
-    const updatedCart = await removeFromCart(userId, productId);
+    const updatedCart = await cartDB.removeFromCart(userId, productId);
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -52,7 +50,7 @@ const removeProductFromCart = async (req, res) => {
 
 const emptyCart = async (req, res) => {
   try {
-    const updatedCart = await clearCart(req.params.userId);
+    const updatedCart = await cartDB.clearCart(req.params.userId);
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ message: error.message });

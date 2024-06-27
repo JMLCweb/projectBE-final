@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-
 const jwtSecret = process.env.JWT_SECRET;
 
 function createToken(id, email, role) {
@@ -17,12 +16,7 @@ function createToken(id, email, role) {
 
 function verifyToken(token) {
   let payload;
-  try {
-    payload = jwt.verify(token, jwtSecret);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log(payload);
+  payload = jwt.verify(token, jwtSecret);
   return payload;
 }
 

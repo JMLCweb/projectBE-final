@@ -36,6 +36,15 @@ const updateProductById = async (id, product) => {
   return result.matchedCount > 0;
 };
 
+const deleteProductById = async (id) => {
+  const db = await connectToDB();
+  const productsCollection = db.collection("products");
+  const result = await productsCollection.deleteOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+  return result.deletedCount > 0;
+};
+
 const addReview = async (productId, userId, rating, comment) => {
   const db = await connectToDB();
   const productsCollection = db.collection("products");
@@ -111,15 +120,6 @@ const removeReview = async (productId, reviewId) => {
   }
 
   return result;
-};
-
-const deleteProductById = async (id) => {
-  const db = await connectToDB();
-  const productsCollection = db.collection("products");
-  const result = await productsCollection.deleteOne({
-    _id: ObjectId.createFromHexString(id),
-  });
-  return result.deletedCount > 0;
 };
 
 const addToFavorites = async (userId, productId) => {

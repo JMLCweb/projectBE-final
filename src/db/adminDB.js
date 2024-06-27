@@ -13,6 +13,7 @@ const addAdmin = async (admin) => {
     ...adminData,
     email,
     password: hash,
+    role: "admin",
     createdAt: new Date(),
   };
 

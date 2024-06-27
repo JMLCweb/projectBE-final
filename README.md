@@ -1,26 +1,31 @@
-# API Routes Documentation
+# API Documentation
 
-## Admin Routes
+### O backend desta aplicação Node.js utiliza a framework Express para definir rotas e middleware, JWT para autenticação, e separa responsabilidades de usuário/admin. Abaixo estão as rotas disponíveis na API, junto com seus métodos, URLs, descrições e requisitos de autorização.
 
-### Get Admin By ID
+## -- -- -- -- -- -- -- -- Routes -- -- -- -- -- -- -- --
 
-- **Method:** GET
-- **URL:** `http://localhost:3000/godmode/{adminId}`
-- **Description:** Fetches the admin details by ID.
-- **Authorization:** Requires admin authentication and token.
+### -- Admin Routes --
 
-### Get All Admins
+#### Get Admin By ID
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/godmode/`
-- **Description:** Fetches the list of all admins.
+- **URL:** `/godmode/{adminId}`
+- **Description:** Fetch the admin details by ID.
 - **Authorization:** Requires admin authentication and token.
 
-### Register Admin
+#### Get All Admins
+
+- **Method:** GET
+- **URL:** `/godmode/`
+- **Description:** Fetch the list of all admins.
+- **Authorization:** Requires admin authentication and token.
+
+#### Register Admin
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/godmode/register`
-- **Description:** Registers a new admin.
+- **URL:** `godmode/register`
+- **Description:** Register a new admin.
+- **Authorization:** No Auth needed.
 - **Payload:**
   ```json
   {
@@ -30,11 +35,12 @@
   }
   ```
 
-### LoginAdmin
+#### Login Admin
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/godmode/login`
+- **URL:** `/godmode/login`
 - **Description:** Login admin.
+- **Authorization:** No Auth needed.
 - **Payload:**
   ```json
   {
@@ -43,10 +49,11 @@
   }
   ```
 
-### UpdateAdmin
+#### Update Admin
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/godmode/update/{adminId}`
+- **URL:** `/godmode/update/{adminId}`
+- **Description:** Update admin details.
 - **Authorization:** Requires admin authentication and token.
 - **Payload:**
   ```json
@@ -57,19 +64,21 @@
   }
   ```
 
-### DeleteAdmin
+#### Delete Admin
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/godmode/delete/{adminId}`
+- **URL:** `/godmode/delete/{adminId}`
+- **Description:** Delete an admin by ID.
 - **Authorization:** Requires admin authentication and token.
 
-## Users
+### -- Users --
 
-### RegisterUser
+#### Register User
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/users/register`
-- **Description:** Registers a new user.
+- **URL:** `/users/register`
+- **Description:** Register a new user.
+- **Authorization:** No Auth needed.
 - **Payload:**
   ```json
   {
@@ -82,10 +91,12 @@
   }
   ```
 
-### LoginUser
+#### Login User
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/users/login`
+- **URL:** `/users/login`
+- **Description:** Login an admin.
+- **Authorization:** No Auth needed.
 - **Payload:**
   ```json
   {
@@ -94,22 +105,25 @@
   }
   ```
 
-### GetUserID
+#### Get User By ID
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/users/{userId}`
+- **URL:** `/users/{userId}`
+- **Description:** Fetch user details by ID.
 - **Authorization:** Requires user/admin authentication and token.
 
-### GetAllUsers
+#### Get All Users
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/users`
+- **URL:** `/users`
+- **Description:** Fetch a list of all users.
 - **Authorization:** Requires admin authentication and token.
 
-### UpdateUserWithVerification
+#### Update User With Verification
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/users/update/{userId}`
+- **URL:** `/users/update/{userId}`
+- **Description:** Update user details with password verification.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -119,10 +133,11 @@
   }
   ```
 
-### UpdateUserWithAdmin
+#### Update User With Admin
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/users/update/admin/{userId}`
+- **URL:** `/users/update/admin/{userId}`
+- **Description:** Update user details by an admin.
 - **Authorization:** Requires admin authentication and token.
 - **Payload:**
   ```json
@@ -132,30 +147,34 @@
   }
   ```
 
-### deleteUserId
+#### Delete User By ID
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/users/delete/{userId}`
+- **URL:** `/users/delete/{userId}`
+- **Description:** Delete a user by ID.
 - **Authorization:** Requires admin authentication and token.
 
-## Products
+### -- Products --
 
-### GetProducts
-
-- **Method:** GET
-- **URL:** `http://localhost:3000/products`
-- **Authorization:** No Auth needed.
-
-### GetProductId
+#### Get Products
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/products/{productId}`
+- **URL:** `/products`
+- **Description:** Fetch a list of all products.
 - **Authorization:** No Auth needed.
 
-### AddProduct
+#### Get Product By ID
+
+- **Method:** GET
+- **URL:** `/products/{productId}`
+- **Description:** Fetch a list of all products.
+- **Authorization:** No Auth needed.
+
+#### Add Product
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/products`
+- **URL:** `/products`
+- **Description:** Add a new product.
 - **Authorization:** Requires admin authentication and token.
 - **Payload:**
   ```json
@@ -167,10 +186,11 @@
   }
   ```
 
-### AddProductReview
+#### Add Product Review
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/products/review/{userId}`
+- **URL:** `/products/review/{userId}`
+- **Description:** Add a review to a product.
 - **Authorization:** Requires user authentication and token.
   - **Payload:**
   ```json
@@ -181,10 +201,11 @@
   }
   ```
 
-### AddToFavorites
+#### Add To Favorites
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/products/favorites/{userId}`
+- **URL:** `/products/favorites/{userId}`
+- **Description:** Add product to user's favorites.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -193,10 +214,11 @@
   }
   ```
 
-### editProductReview
+#### Edit Product Review
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/products/review/{userId}`
+- **URL:** `/products/review/{userId}`
+- **Description:** Edit a review for a product.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -208,10 +230,11 @@
   }
   ```
 
-### UpdateProduct
+#### Update Product
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/products/{productId}`
+- **URL:** `/products/{productId}`
+- **Description:** Update product details.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -221,10 +244,11 @@
   }
   ```
 
-### deleteProductReview
+#### Delete Product Review
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/products/review/delete`
+- **URL:** `/products/review/delete`
+- **Description:** Delete a product review.
 - **Authorization:** Requires admin authentication and token.
 - **Payload:**
   ```json
@@ -234,10 +258,11 @@
   }
   ```
 
-### deleteFavorite
+#### Delete Favorite
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/products/favorites/{userId}`
+- **URL:** `/products/favorites/{userId}`
+- **Description:** Remove a product from user's favorites.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -246,24 +271,27 @@
   }
   ```
 
-### deleteProductId
+#### Delete Product By ID
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/products/{productId}`
+- **URL:** `/products/{productId}`
+- **Description:** Delete a product by ID.
 - **Authorization:** Requires admin authentication and token.
 
-## Cart
+### -- Cart --
 
-### GetCartUserId
+#### Get Cart By User ID
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/cart/{userId}`
+- **URL:** `/cart/{userId}`
+- **Description:** Fetch cart details for a user.
 - **Authorization:** Requires user/admin authentication and token.
 
-### AddCartProduct
+#### Add Product To Cart
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/cart/add`
+- **URL:** `/cart/add`
+- **Description:** Add a product to the user's cart.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -273,10 +301,11 @@
   }
   ```
 
-### UpdateCartUserId
+#### Update Cart User ID
 
 - **Method:** PUT
-- **URL:** `http://localhost:3000/cart/update/{userId}`
+- **URL:** `/cart/update/{userId}`
+- **Description:** Update the cart for a user.
 - **Authorization:** Requires user authentication and token.
 - **Payload:**
   ```json
@@ -286,10 +315,11 @@
   }
   ```
 
-### deleteCartProduct - DEL
+#### Delete Product From Cart
 
 - **Method:** DELETE
-- **URL:** `http://localhost:3000/cart/remove/{userId}`
+- **URL:** `/cart/remove/{userId}`
+- **Description:** Remove a product from the cart.
 - **Authorization:** Requires user/admin authentication and token.
 - **Payload:**
   ```json
@@ -298,36 +328,41 @@
   }
   ```
 
-### ClearCart
+#### Clear Cart
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/cart/clear/{userId}`
+- **URL:** `/cart/clear/{userId}`
+- **Description:** Clear the cart for a user.
 - **Authorization:** Requires user/admin authentication and token.
 
-## Orders
+### -- Orders --
 
-### Checkout
+#### Checkout
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/orders/checkout/{userId}`
+- **URL:** `/orders/checkout/{userId}`
+- **Description:** Check out the cart for a user.
 - **Authorization:** Requires user authentication and token.
 
-### GetAllOrders
+#### Get All Orders
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/orders`
+- **URL:** `/orders`
+- **Description:** Fetch a list of all orders.
 - **Authorization:** Requires admin authentication and token.
 
-### GetOrderById
+#### Get Order By ID
 
 - **Method:** GET
-- **URL:** `http://localhost:3000/orders/{orderId}`
+- **URL:** `/orders/{orderId}`
+- **Description:** Fetch order details by ID.
 - **Authorization:** Requires admin authentication and token.
 
-### UpdateOrder
+#### Update Order
 
 - **Method:** POST
-- **URL:** `http://localhost:3000/orders/update/{orderId}`
+- **URL:** `/orders/update/{orderId}`
+- **Description:** Update the status of an order.
 - **Authorization:** Requires admin authentication and token.
 - **Payload:**
   ```json

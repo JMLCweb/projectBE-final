@@ -1,24 +1,16 @@
-const {
-  getAllUsers,
-  getUserById,
-  addUser,
-  updateUserById,
-  deleteUserById,
-  getUserByEmail,
-  updateUserWithVerification,
-} = require("../db/usersDB");
+const usersDB = require("../db/usersDB");
 const jwtService = require("../services/jwtService");
 const argon2 = require("argon2");
 
 const createUser = async (req, res) => {
   const { email } = req.body;
   try {
-    const existingUser = await getUserByEmail(email);
+    const existingUser = await usersDB.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    const newUser = await addUser(req.body);
+    const newUser = await usersDB.addUser(req.body);
 
     const token = jwtService.createToken(
       newUser._id,
@@ -36,7 +28,7 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await getUserByEmail(email);
+    const user = await usersDB.getUserByEmail(email);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -62,7 +54,7 @@ const loginUser = async (req, res) => {
 
 const fetchAllUsers = async (req, res) => {
   try {
-    const users = await getAllUsers();
+    const users = await usersDB.getAllUsers();
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -71,7 +63,7 @@ const fetchAllUsers = async (req, res) => {
 
 const fetchUserById = async (req, res) => {
   try {
-    const user = await getUserById(req.params.userId);
+    const user = await usersDB.getUserById(req.params.userId);
     if (!user) {
       res.status(404).json({ message: "User not found" });
     } else {
@@ -86,7 +78,7 @@ const modifyUserById = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const updated = await updateUserById(userId, req.body);
+    const updated = await usersDB.updateUserById(userId, req.body);
     if (!updated) {
       res.status(404).json({ message: "User not found" });
     } else {
@@ -99,7 +91,7 @@ const modifyUserById = async (req, res) => {
 
 const modifyUserWithVerification = async (req, res) => {
   try {
-    const updated = await updateUserWithVerification(
+    const updated = await usersDB.updateUserWithVerification(
       req.params.userId,
       req.body
     );
@@ -115,7 +107,7 @@ const modifyUserWithVerification = async (req, res) => {
 
 const removeUserById = async (req, res) => {
   try {
-    const deleted = await deleteUserById(req.params.id);
+    const deleted = await usersDB.deleteUserById(req.params.id);
     if (!deleted) {
       res.status(404).json({ message: "User not found" });
     } else {

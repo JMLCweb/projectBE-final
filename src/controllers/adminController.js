@@ -1,23 +1,16 @@
-const {
-  addAdmin,
-  getAllAdmins,
-  getAdminById,
-  getAdminByEmail,
-  updateAdminById,
-  deleteAdminById,
-} = require("../db/adminDB");
+const adminDB = require("../db/adminDB");
 const argon2 = require("argon2");
 const jwtService = require("../services/jwtService");
 
 const createAdmin = async (req, res) => {
   const { email } = req.body;
   try {
-    const existingAdmin = await getAdminByEmail(email);
+    const existingAdmin = await adminDB.getAdminByEmail(email);
     if (existingAdmin) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    const newAdmin = await addAdmin(req.body);
+    const newAdmin = await adminDB.addAdmin(req.body);
 
     const token = jwtService.createToken(newAdmin._id, newAdmin.email);
     res.status(201).json({ admin: newAdmin, token });
@@ -29,7 +22,7 @@ const createAdmin = async (req, res) => {
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const result = await getAdminByEmail(email);
+    const result = await adminDB.getAdminByEmail(email);
 
     if (!result) {
       res.status(400).json({
@@ -63,7 +56,7 @@ const loginAdmin = async (req, res) => {
 
 const fetchAllAdmins = async (req, res) => {
   try {
-    const admins = await getAllAdmins();
+    const admins = await adminDB.getAllAdmins();
     res.json(admins);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -72,7 +65,7 @@ const fetchAllAdmins = async (req, res) => {
 
 const fetchAdminById = async (req, res) => {
   try {
-    const admin = await getAdminById(req.params.id);
+    const admin = await adminDB.getAdminById(req.params.id);
     if (!admin) {
       res.status(404).json({ message: "Admin not found" });
     } else {
@@ -85,7 +78,7 @@ const fetchAdminById = async (req, res) => {
 
 const modifyAdminById = async (req, res) => {
   try {
-    const admin = await updateAdminById(req.params.id, req.body);
+    const admin = await adminDB.updateAdminById(req.params.id, req.body);
     if (!admin) {
       res.status(404).json({ message: "Admin not found" });
     } else {
@@ -98,7 +91,7 @@ const modifyAdminById = async (req, res) => {
 
 const removeAdminById = async (req, res) => {
   try {
-    const admin = await deleteAdminById(req.params.id);
+    const admin = await adminDB.deleteAdminById(req.params.id);
     if (!admin) {
       res.status(404).json({ message: "Admin not found" });
     } else {

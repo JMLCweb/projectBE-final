@@ -107,12 +107,12 @@ const clearCart = async (userId) => {
   const db = await connectToDB();
   const usersCollection = db.collection("users");
 
-  await usersCollection.updateOne(
+  const user = await usersCollection.updateOne(
     { _id: ObjectId.createFromHexString(userId) },
     { $set: { cart: [] } }
   );
 
-  return [];
+  return user;
 };
 
 module.exports = {
