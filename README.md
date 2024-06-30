@@ -371,3 +371,10 @@
     "notes": "order note"
   }
   ```
+
+#### Delete Order
+
+- **Method:** POST
+- **URL:** `/orders/delete/{orderId}`
+- **Description:** Delete order.
+- **Authorization:** Requires admin authentication and token.

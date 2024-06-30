@@ -15,6 +15,11 @@ const checkout = async (userId) => {
   if (!user.cart || user.cart.length === 0) {
     throw new Error('Cart is empty');
   }
+  const totalPrice = user.cart
+    .reduce((total, item) => {
+      return total + item.price * item.quantity;
+    }, 0)
+    .toFixed(2);
 
   const newOrder = {
     _id: new ObjectId(),
@@ -22,6 +27,12 @@ const checkout = async (userId) => {
     items: user.cart,
     status: 'pending',
     notes: 'Order Info',
+    totalPrice: totalPrice,
+    address: user.address,
+    country: user.country,
+    zipcode: user.zipcode,
+    city: user.city,
+    paymentMethod: 'On delevery',
     orderDate: new Date(),
   };
 
@@ -92,10 +103,22 @@ const moveOrderToHistory = async (userId, orderId) => {
   return result.modifiedCount > 0;
 };
 
+const deleteOrder = async (orderId) => {
+  const db = await connectToDB();
+  const ordersCollection = db.collection('orders');
+
+  const result = await ordersCollection.deleteOne({
+    _id: new ObjectId(orderId),
+  });
+
+  return result.deletedCount > 0;
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
   updateOrderStatus,
   moveOrderToHistory,
   checkout,
+  deleteOrder,
 };

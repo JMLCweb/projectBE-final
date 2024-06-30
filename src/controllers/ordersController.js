@@ -60,9 +60,24 @@ const checkoutCart = async (req, res) => {
   }
 };
 
+const deleteOrder = async (req, res) => {
+  try {
+    const deleted = await ordersDB.deleteOrder(req.params.orderId);
+    if (!deleted) {
+      res
+        .status(404)
+        .json({ message: 'Order not found or could not be deleted' });
+    } else {
+      res.json({ message: 'Order deleted successfully' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   fetchAllOrders,
   fetchOrderById,
   newOrderStatus,
   checkoutCart,
+  deleteOrder,
 };

@@ -18,5 +18,6 @@ router.use(checkRole('admin'));
 router.get('/', ordersController.fetchAllOrders);
 router.get('/:orderId', ordersController.fetchOrderById);
 router.put('/update/:orderId', ordersController.newOrderStatus);
+router.delete('/delete/:orderId', ordersController.deleteOrder);
 
 module.exports = router;
