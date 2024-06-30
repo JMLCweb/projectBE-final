@@ -25,7 +25,8 @@
 - **Method:** POST
 - **URL:** `godmode/register`
 - **Description:** Register a new admin.
-- **Authorization:** No Auth needed.
+- **Authorization:** Requires admin authentication and token.
+
 - **Payload:**
   ```json
   {
