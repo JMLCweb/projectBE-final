@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const connectToDB = require('./connectDB');
+const sendEmail = require('../services/sendEmail');
 
 const checkout = async (userId) => {
   const db = await connectToDB();
@@ -42,6 +43,16 @@ const checkout = async (userId) => {
     { _id: new ObjectId(userId) },
     { $set: { cart: [] } }
   );
+
+  const subject = 'Checkout Confirmation';
+  const text = `Hi ${user.name},\n\nThanks for your new Order\n\nOrder Details:\n${user.cart.map((item) => `${item.name} - ${item.quantity} x $${item.price}`).join('\n')}\n\nTotal: $${totalPrice}\n\nSend to:\n${user.address}, ${user.city}, ${user.country}, ${user.zipcode}\n\nPayment Method: ${newOrder.paymentMethod}\n\nOrder Date: ${newOrder.orderDate}`;
+
+  try {
+    await sendEmail(user.email, subject, text);
+    console.log('E-mail successfully delivered.');
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
 
   return newOrder;
 };

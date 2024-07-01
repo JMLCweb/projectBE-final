@@ -51,11 +51,13 @@ const updateAdminById = async (id, admin) => {
     admin.password = await argon2.hash(admin.password);
   }
 
+  const { isSuperAdmin, ...adminWithoutSuperAdmin } = admin;
+
   const result = await adminCollection.updateOne(
     { _id: ObjectId.createFromHexString(id) },
     {
       $set: {
-        ...admin,
+        ...adminWithoutSuperAdmin,
         updatedAt: new Date(),
       },
     }
