@@ -14,6 +14,7 @@ const addAdmin = async (admin) => {
     email,
     password: hash,
     role: 'admin',
+    isSuperAdmin: false,
     createdAt: new Date(),
   };
 
@@ -66,6 +67,14 @@ const updateAdminById = async (id, admin) => {
 const deleteAdminById = async (id) => {
   const db = await connectToDB();
   const adminCollection = db.collection('admin');
+
+  const admin = await adminCollection.findOne({
+    _id: ObjectId.createFromHexString(id),
+  });
+
+  if (admin && admin.isSuperAdmin) {
+    throw new Error('Super Admin cannot be deleted');
+  }
   const result = await adminCollection.deleteOne({
     _id: ObjectId.createFromHexString(id),
   });

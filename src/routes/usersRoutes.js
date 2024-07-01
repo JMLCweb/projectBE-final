@@ -5,12 +5,11 @@ const checkRole = require('../middleware/role');
 const verifyId = require('../middleware/verifyId');
 
 const router = express.Router();
-
+router.post('/register', userController.createUser);
 router.post('/login', userController.loginUser);
 
 router.use(auth.isAuthenticated);
 router.get('/', checkRole('admin'), userController.fetchAllUsers);
-router.post('/register', checkRole('admin'), userController.createUser);
 
 router.get('/:userId', verifyId.IdentifyUser, userController.fetchUserById);
 
