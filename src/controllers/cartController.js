@@ -5,7 +5,7 @@ const fetchCart = async (req, res) => {
     const cart = await cartDB.getCart(req.params.userId);
     res.json(cart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Cart' });
   }
 };
 
@@ -19,7 +19,7 @@ const addProductToCart = async (req, res) => {
     );
     res.json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error adding Product' });
   }
 };
 
@@ -33,7 +33,7 @@ const updateCartItems = async (req, res) => {
     );
     res.json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Update Failed' });
   }
 };
 
@@ -44,7 +44,7 @@ const removeProductFromCart = async (req, res) => {
     const updatedCart = await cartDB.removeFromCart(userId, productId);
     res.json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Delete Failed' });
   }
 };
 
@@ -53,7 +53,7 @@ const emptyCart = async (req, res) => {
     const updatedCart = await cartDB.clearCart(req.params.userId);
     res.json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Empty Cart Failed' });
   }
 };
 

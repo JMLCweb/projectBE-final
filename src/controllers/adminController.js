@@ -59,7 +59,7 @@ const fetchAllAdmins = async (req, res) => {
     const admins = await adminDB.getAllAdmins();
     res.json(admins);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Admins' });
   }
 };
 
@@ -72,7 +72,7 @@ const fetchAdminById = async (req, res) => {
       res.json(admin);
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Admin' });
   }
 };
 
@@ -85,7 +85,7 @@ const modifyAdminById = async (req, res) => {
       res.json({ message: 'Admin updated successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Update Failed' });
   }
 };
 
@@ -95,10 +95,10 @@ const removeAdminById = async (req, res) => {
     if (!admin) {
       res.status(404).json({ message: 'Admin not found' });
     } else {
-      res.json({ message: 'Admin deleted successfully' });
+      res.json({ message: 'Admin deletedsuccessfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Delete Failed' });
   }
 };
 

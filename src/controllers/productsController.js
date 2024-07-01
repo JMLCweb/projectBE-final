@@ -178,7 +178,7 @@ const removeProductReview = async (req, res) => {
     res.json({ message: 'Review removed successfully' });
   } catch (error) {
     console.error('Error in removeProductReview:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Delete Failed' });
   }
 };
 

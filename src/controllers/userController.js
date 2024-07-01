@@ -57,7 +57,7 @@ const fetchAllUsers = async (req, res) => {
     const users = await usersDB.getAllUsers();
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Users' });
   }
 };
 
@@ -70,7 +70,7 @@ const fetchUserById = async (req, res) => {
       res.json(user);
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting User' });
   }
 };
 
@@ -85,7 +85,7 @@ const modifyUserById = async (req, res) => {
       res.json({ message: 'User updated successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'User Update Error' });
   }
 };
 
@@ -101,7 +101,7 @@ const modifyUserWithVerification = async (req, res) => {
       res.json({ message: 'User updated successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'User Update Error' });
   }
 };
 
@@ -114,7 +114,7 @@ const removeUserById = async (req, res) => {
       res.json({ message: 'User deleted successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Delete failed' });
   }
 };
 

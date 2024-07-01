@@ -5,7 +5,7 @@ const fetchAllOrders = async (req, res) => {
     const orders = await ordersDB.getAllOrders();
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Orders' });
   }
 };
 
@@ -18,7 +18,7 @@ const fetchOrderById = async (req, res) => {
       res.json(order);
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error getting Order' });
   }
 };
 
@@ -47,7 +47,7 @@ const newOrderStatus = async (req, res) => {
 
     res.json({ message: 'Order status Completed and moved for history' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Update Failed' });
   }
 };
 
@@ -56,7 +56,7 @@ const checkoutCart = async (req, res) => {
     const newOrder = await ordersDB.checkout(req.params.userId);
     res.json(newOrder);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Checkout Failed' });
   }
 };
 
@@ -71,7 +71,7 @@ const deleteOrder = async (req, res) => {
       res.json({ message: 'Order deleted successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Delete Failed' });
   }
 };
 module.exports = {
