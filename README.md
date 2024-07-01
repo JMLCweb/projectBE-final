@@ -364,6 +364,9 @@
 - **URL:** `/cart/{userId}`
 - **Description:** Fetch cart details for a user.
 - **Authorization:** Requires user/admin authentication and token.
+- **Responses:**
+  - `200 OK`: `Cart retrieved successfully`
+  - `500 Internal Server Error`: `Error getting cart`
 
 #### Add Product To Cart
 
@@ -378,6 +381,9 @@
     "quantity": "1"
   }
   ```
+- **Responses:**
+  - `200 OK`: `Product added to cart successfully`
+  - `500 Internal Server Error`: `Error adding product`
 
 #### Update Cart User ID
 
@@ -392,6 +398,9 @@
     "quantity": "new quantity"
   }
   ```
+- **Responses:**
+  - `200 OK`: `Cart updated successfully`
+  - `500 Internal Server Error`: `Update failed`
 
 #### Delete Product From Cart
 
@@ -405,13 +414,19 @@
     "productId": "productId"
   }
   ```
+- **Responses:**
+  - `200 OK`: `Product removed from cart successfully`
+  - `500 Internal Server Error`: `Delete failed`
 
-#### Clear Cart
+#### Clean Cart
 
 - **Method:** POST
 - **URL:** `/cart/clear/{userId}`
 - **Description:** Clear the cart for a user.
 - **Authorization:** Requires user/admin authentication and token.
+- **Responses:**
+  - `200 OK`: `Cart emptied successfully`
+  - `500 Internal Server Error`: `Empty cart failed`
 
 ### -- Orders --
 
